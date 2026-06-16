@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Custom Fitness — Admin Panel</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap');
+
+  :root {
+    --bg: #080808;
+    --card: #111111;
+    --card2: #161616;
+    --border: #1E1E1E;
+    --border2: #252525;
+    --orange: #FF6B35;
+    --orange-dim: rgba(255,107,53,0.1);
+    --green: #22C55E;
+    --green-dim: rgba(34,197,94,0.1);
+    --red: #EF4444;
+    --red-dim: rgba(239,68,68,0.1);
+    --blue: #3B82F6;
+    --blue-dim: rgba(59,130,246,0.1);
+    --yellow: #F59E0B;
+    --text: #F0F0F0;
+    --text2: #888;
+    --text3: #555;
+    --font: 'Inter', sans-serif;
+    --font-display: 'Space Grotesk', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+
+  /* LOGIN */
+  #login-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+  }
+  .login-card {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 20px; padding: 40px; width: 100%; max-width: 400px;
+  }
+  .login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+  .login-logo-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--orange); display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 800; font-size: 14px; color: #fff;
+  }
+  .login-logo span { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+  .login-title { font-size: 22px; font-weight: 700; font-family: var(--font-display); margin-bottom: 6px; }
+  .login-sub { color: var(--text2); font-size: 13px; margin-bottom: 28px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { color: var(--text2); font-size: 12px; font-weight: 600; margin-bottom: 6px; display: block; letter-spacing: 0.5px; }
+  .form-input {
+    width: 100%; padding: 12px 14px;
+    background: var(--card2); border: 1px solid var(--border2);
+    border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font);
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--orange); }
+  .btn-login {
+    width: 100%; padding: 13px;
+    background: var(--orange); color: #fff; border: none;
+    border-radius: 10px; font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: var(--font);
+    transition: opacity 0.2s;
+  }
+  .btn-login:hover { opacity: 0.85; }
+  .login-error { color: var(--red); font-size: 13px; margin-top: 12px; text-align: center; display: none; }
+
+  /* LAYOUT */
+  #app { display: none; min-height: 100vh; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; width: 220px;
+    background: var(--card); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; z-index: 50;
+  }
+  .sidebar-logo {
+    padding: 20px; display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--orange); display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 800; font-size: 11px; color: #fff;
+  }
+  .sidebar-logo span { font-family: var(--font-display); font-size: 14px; font-weight: 700; }
+  .sidebar-label { color: var(--text3); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 20px 16px 8px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; border-radius: 8px; margin: 2px 8px;
+    cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 500;
+    transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--card2); color: var(--text); }
+  .nav-item.active { background: var(--orange-dim); color: var(--orange); }
+  .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .sidebar-bottom { margin-top: auto; padding: 16px; border-top: 1px solid var(--border); }
+  .sidebar-user { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .sidebar-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--orange); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px; color: #fff;
+  }
+  .sidebar-user-info { flex: 1; min-width: 0; }
+  .sidebar-user-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar-user-role { font-size: 11px; color: var(--orange); }
+  .btn-logout {
+    width: 100%; padding: 8px; background: var(--card2);
+    border: 1px solid var(--border2); border-radius: 8px;
+    color: var(--text2); font-size: 12px; cursor: pointer; font-family: var(--font);
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+  .main { margin-left: 220px; padding: 24px; min-height: 100vh; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* TOPBAR */
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .page-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
+  .page-sub { color: var(--text2); font-size: 13px; margin-top: 2px; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .badge-live {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--green-dim); border: 1px solid rgba(34,197,94,0.3);
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 12px; font-weight: 600; color: var(--green);
+  }
+  .badge-live span { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+  /* STAT CARDS */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 14px; padding: 18px;
+  }
+  .stat-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .stat-card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .stat-card-label { color: var(--text2); font-size: 12px; font-weight: 500; }
+  .stat-card-value { font-family: var(--font-display); font-size: 28px; font-weight: 800; }
+  .stat-card-sub { color: var(--text3); font-size: 11px; margin-top: 4px; }
+
+  /* NOTIFICATION COMPOSER */
+  .composer-card {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 16px; padding: 24px; margin-bottom: 20px;
+  }
+  .composer-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .composer-sub { color: var(--text2); font-size: 13px; margin-bottom: 20px; }
+  .composer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-textarea {
+    width: 100%; padding: 12px 14px;
+    background: var(--card2); border: 1px solid var(--border2);
+    border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font);
+    outline: none; resize: vertical; min-height: 80px;
+    transition: border-color 0.2s;
+  }
+  .form-textarea:focus { border-color: var(--orange); }
+  .form-select {
+    width: 100%; padding: 12px 14px;
+    background: var(--card2); border: 1px solid var(--border2);
+    border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font);
+    outline: none; cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .form-select:focus { border-color: var(--orange); }
+  .composer-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
+  .recipient-info { display: flex; align-items: center; gap: 8px; color: var(--text2); font-size: 13px; }
+  .recipient-count { color: var(--orange); font-weight: 700; }
+  .btn-send {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 24px; background: var(--orange);
+    border: none; border-radius: 10px;
+    color: #fff; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: var(--font);
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn-send:hover { opacity: 0.85; }
+  .btn-send:active { transform: scale(0.97); }
+  .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* PREVIEW */
+  .preview-card {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 16px; padding: 24px; margin-bottom: 20px;
+  }
+  .notif-preview {
+    background: #1C1C1E; border-radius: 14px; padding: 14px 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+    margin-top: 16px;
+  }
+  .notif-preview-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--orange); display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .notif-preview-app { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
+  .notif-preview-title { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+  .notif-preview-body { color: var(--text2); font-size: 13px; line-height: 1.4; }
+  .notif-preview-time { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* HISTORY TABLE */
+  .table-card {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 16px; overflow: hidden;
+  }
+  .table-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px; border-bottom: 1px solid var(--border);
+  }
+  .table-title { font-weight: 700; font-size: 15px; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left; padding: 12px 20px;
+    color: var(--text3); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    background: var(--card2); border-bottom: 1px solid var(--border);
+  }
+  td { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.01); }
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  }
+  .status-sent { background: var(--green-dim); color: var(--green); }
+  .status-failed { background: var(--red-dim); color: var(--red); }
+  .status-pending { background: var(--orange-dim); color: var(--orange); }
+
+  /* USERS PAGE */
+  .users-grid { display: grid; gap: 10px; }
+  .user-row {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 12px; padding: 14px 18px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .user-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--orange); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #fff; flex-shrink: 0;
+  }
+  .user-info { flex: 1; }
+  .user-name { font-weight: 600; font-size: 14px; }
+  .user-email { color: var(--text2); font-size: 12px; }
+  .user-token { color: var(--green); font-size: 11px; margin-top: 2px; }
+  .user-no-token { color: var(--text3); font-size: 11px; margin-top: 2px; }
+  .user-stats { display: flex; gap: 20px; }
+  .user-stat { text-align: center; }
+  .user-stat-value { font-weight: 700; font-size: 15px; color: var(--orange); }
+  .user-stat-label { color: var(--text3); font-size: 10px; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 999;
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 12px; padding: 14px 18px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 500;
+    transform: translateY(100px); opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 320px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: rgba(34,197,94,0.3); }
+  .toast.error { border-color: rgba(239,68,68,0.3); }
+  .toast-icon { font-size: 18px; }
+
+  /* LOADING */
+  .loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--text3); gap: 10px; }
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--border2); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty { text-align: center; padding: 40px; color: var(--text3); }
+  .empty-icon { font-size: 32px; margin-bottom: 10px; }
+
+  .section-divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .sidebar { width: 60px; }
+    .sidebar-logo span, .nav-item span, .sidebar-label, .sidebar-user-info, .btn-logout { display: none; }
+    .main { margin-left: 60px; }
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .composer-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">CF</div>
+      <span>Custom Fitness</span>
+    </div>
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">Sign in with your Supabase credentials</div>
+
+    <input type="hidden" id="supabase-url" value="https://uxiozoaikghvtcywzhbp.supabase.co" />
+    <input type="hidden" id="service-key" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4aW96b2Fpa2dodnRjeXd6aGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDk0NzA0NCwiZXhwIjoyMDk2NTIzMDQ0fQ.o9IJvHfC99vYbvqE2xD9TLjsuKdruS6WQW40ZmdXlU4" />
+    <div class="form-group">
+      <label class="form-label">ADMIN EMAIL</label>
+      <input class="form-input" id="admin-email" type="email" placeholder="your@email.com" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">ADMIN PASSWORD</label>
+      <input class="form-input" id="admin-password" type="password" placeholder="••••••••" />
+    </div>
+    <button class="btn-login" onclick="handleLogin()">Sign In to Admin</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">CF</div>
+      <span>Admin</span>
+    </div>
+    <div class="sidebar-label">Main</div>
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <span class="nav-icon">📊</span><span>Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="showPage('notifications')">
+      <span class="nav-icon">🔔</span><span>Send Notification</span>
+    </div>
+    <div class="nav-item" onclick="showPage('history')">
+      <span class="nav-icon">📋</span><span>History</span>
+    </div>
+    <div class="sidebar-label">Data</div>
+    <div class="nav-item" onclick="showPage('users')">
+      <span class="nav-icon">👥</span><span>Users</span>
+    </div>
+    <div class="nav-item" onclick="showPage('activities')">
+      <span class="nav-icon">🏃</span><span>Activities</span>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebar-avatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebar-email">Admin</div>
+          <div class="sidebar-user-role">Administrator</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-sub">Custom Fitness app overview</div>
+        </div>
+        <div class="topbar-right">
+          <div class="badge-live"><span></span> Live</div>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-label">Total Users</div>
+            <div class="stat-card-icon" style="background:var(--orange-dim);">👥</div>
+          </div>
+          <div class="stat-card-value" id="stat-users">—</div>
+          <div class="stat-card-sub">Registered accounts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-label">Total Activities</div>
+            <div class="stat-card-icon" style="background:var(--green-dim);">🏃</div>
+          </div>
+          <div class="stat-card-value" id="stat-activities">—</div>
+          <div class="stat-card-sub">Across all users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-label">Total Distance</div>
+            <div class="stat-card-icon" style="background:var(--blue-dim);">📍</div>
+          </div>
+          <div class="stat-card-value" id="stat-distance">—</div>
+          <div class="stat-card-sub">km tracked globally</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-label">Push Tokens</div>
+            <div class="stat-card-icon" style="background:rgba(245,158,11,0.1);">🔔</div>
+          </div>
+          <div class="stat-card-value" id="stat-tokens">—</div>
+          <div class="stat-card-sub">Devices registered</div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Recent Activities</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Type</th>
+              <th>Name</th>
+              <th>Distance</th>
+              <th>Duration</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="recent-activities-table">
+            <tr><td colspan="6"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SEND NOTIFICATION -->
+    <div class="page" id="page-notifications">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Send Notification</div>
+          <div class="page-sub">Fire a live push notification to all users</div>
+        </div>
+      </div>
+
+      <div class="composer-card">
+        <div class="composer-title">Compose Notification</div>
+        <div class="composer-sub">This will be sent immediately to all registered devices</div>
+
+        <div class="form-group">
+          <label class="form-label">TITLE</label>
+          <input class="form-input" id="notif-title" type="text" placeholder="e.g. Time to move!" oninput="updatePreview()" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">MESSAGE</label>
+          <textarea class="form-textarea" id="notif-body" placeholder="e.g. Keep your streak alive! Log a run, ride or walk today." oninput="updatePreview()"></textarea>
+        </div>
+        <div class="composer-grid">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">TARGET SCREEN</label>
+            <select class="form-select" id="notif-screen" onchange="updatePreview()">
+              <option value="Home">Home</option>
+              <option value="Activity">Activity</option>
+              <option value="History">History</option>
+              <option value="Stats">Stats</option>
+              <option value="Profile">Profile</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">RECIPIENTS</label>
+            <select class="form-select" id="notif-target">
+              <option value="all">All Users</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="composer-footer">
+          <div class="recipient-info">
+            🎯 Sending to <span class="recipient-count" id="token-count">—</span> devices
+          </div>
+          <button class="btn-send" id="send-btn" onclick="sendNotification()">
+            🚀 Send Now
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="preview-card">
+        <div class="composer-title">Preview</div>
+        <div class="composer-sub">How the notification will appear on Android</div>
+        <div class="notif-preview">
+          <div class="notif-preview-icon">💪</div>
+          <div>
+            <div class="notif-preview-app">CustomFitness · now</div>
+            <div class="notif-preview-title" id="preview-title">Your notification title</div>
+            <div class="notif-preview-body" id="preview-body">Your notification message will appear here...</div>
+            <div class="notif-preview-time">Opens → <span id="preview-screen">Home</span> screen</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Templates -->
+      <div class="composer-card">
+        <div class="composer-title">Quick Templates</div>
+        <div class="composer-sub">Tap to use a pre-written notification</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;" id="templates-grid">
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="page" id="page-history">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Notification History</div>
+          <div class="page-sub">All notifications sent from admin panel</div>
+        </div>
+        <button onclick="clearHistory()" style="padding:8px 16px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);border-radius:8px;color:var(--red);font-size:12px;cursor:pointer;font-family:var(--font);">Clear History</button>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Message</th>
+              <th>Screen</th>
+              <th>Recipients</th>
+              <th>Status</th>
+              <th>Sent At</th>
+            </tr>
+          </thead>
+          <tbody id="history-table">
+            <tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div>No notifications sent yet</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page" id="page-users">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Users</div>
+          <div class="page-sub">All registered Custom Fitness users</div>
+        </div>
+      </div>
+      <div class="users-grid" id="users-grid">
+        <div class="loading"><div class="spinner"></div> Loading users...</div>
+      </div>
+    </div>
+
+    <!-- ACTIVITIES -->
+    <div class="page" id="page-activities">
+      <div class="topbar">
+        <div>
+          <div class="page-title">All Activities</div>
+          <div class="page-sub">Every activity logged across all users</div>
+        </div>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Type</th>
+              <th>Name</th>
+              <th>Distance</th>
+              <th>Duration</th>
+              <th>Calories</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="all-activities-table">
+            <tr><td colspan="7"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✅</span>
+  <span id="toast-msg">Notification sent!</span>
+</div>
+
+<script>
+let SUPABASE_URL = '';
+let SERVICE_KEY = '';
+let notifHistory = JSON.parse(localStorage.getItem('cf_notif_history') || '[]');
+
+const templates = [
+  { title: 'Time to move!', body: 'Keep your streak alive! Log a run, ride or walk today.', screen: 'Activity', icon: '🏃' },
+  { title: 'Check the leaderboard!', body: 'See how you rank against other athletes this week.', screen: 'Home', icon: '🏆' },
+  { title: 'Weekend warrior time!', body: 'Perfect day for a long run or ride. Get outside!', screen: 'Activity', icon: '💪' },
+  { title: 'Update your body stats!', body: 'Track your fitness progress. Update your weight and height.', screen: 'Profile', icon: '⚖️' },
+  { title: 'New challenge unlocked!', body: 'Can you hit 10km this week? Start your activity now!', screen: 'Activity', icon: '🎯' },
+  { title: 'You are on a streak!', body: 'Keep going! Log an activity today to maintain your streak.', screen: 'Stats', icon: '🔥' },
+];
+
+async function supabaseFetch(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      'apikey': SERVICE_KEY,
+      'Authorization': `Bearer ${SERVICE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...options.headers,
+    },
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const text = await res.text();
+  return text ? JSON.parse(text) : [];
+}
+
+// Hardcoded admin credentials — change these to your own
+const ADMIN_EMAIL = 'ec21ishpreetsingh@global.org.in';
+const ADMIN_PASSWORD = 'superadmin@123';
+
+async function handleLogin() {
+  const url = document.getElementById('supabase-url').value.trim();
+  const key = document.getElementById('service-key').value.trim();
+  const email = document.getElementById('admin-email').value.trim();
+  const pass = document.getElementById('admin-password').value.trim();
+  const errEl = document.getElementById('login-error');
+
+  if (!email || !pass) {
+    errEl.textContent = 'Please fill in all fields.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Check against hardcoded admin credentials
+  if (email !== ADMIN_EMAIL || pass !== ADMIN_PASSWORD) {
+    errEl.textContent = 'Invalid admin credentials.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  SUPABASE_URL = url;
+  SERVICE_KEY = key;
+
+  try {
+    // Verify against Supabase
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'apikey': SERVICE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error_description || data.error);
+
+    // Show app
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('sidebar-email').textContent = email;
+    document.getElementById('sidebar-avatar').textContent = email.charAt(0).toUpperCase();
+
+    loadDashboard();
+    loadTemplates();
+    loadTokenCount();
+    loadHistory();
+  } catch (e) {
+    errEl.textContent = 'Login failed: ' + e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+function handleLogout() {
+  SUPABASE_URL = '';
+  SERVICE_KEY = '';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  if (name === 'users') loadUsers();
+  if (name === 'activities') loadAllActivities();
+  if (name === 'history') loadHistory();
+}
+
+async function loadDashboard() {
+  try {
+    const [profiles, activities, tokens] = await Promise.all([
+      supabaseFetch('profiles?select=id'),
+      supabaseFetch('activities?select=id,distance,type,name,date,user_id&order=created_at.desc&limit=20'),
+      supabaseFetch('push_tokens?select=token'),
+    ]);
+
+    document.getElementById('stat-users').textContent = profiles.length;
+    document.getElementById('stat-activities').textContent = activities.length;
+    document.getElementById('stat-tokens').textContent = tokens.length;
+
+    const totalDist = activities.reduce((sum, a) => sum + parseFloat(a.distance || 0), 0).toFixed(1);
+    document.getElementById('stat-distance').textContent = totalDist;
+
+    // Recent activities table
+    const tbody = document.getElementById('recent-activities-table');
+    if (activities.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">🏃</div>No activities yet</div></td></tr>';
+      return;
+    }
+
+    // Get profiles for user names
+    const userIds = [...new Set(activities.map(a => a.user_id))];
+    const profileData = await supabaseFetch(`profiles?id=in.(${userIds.join(',')})&select=id,name`);
+
+    tbody.innerHTML = activities.slice(0, 10).map(a => {
+      const profile = profileData.find(p => p.id === a.user_id);
+      const typeColor = a.type === 'Running' ? '#FF6B35' : a.type === 'Cycling' ? '#4CAF50' : '#2196F3';
+      return `<tr>
+        <td>${profile?.name || 'Athlete'}</td>
+        <td><span style="color:${typeColor};font-weight:600;">${a.type}</span></td>
+        <td>${a.name || a.type}</td>
+        <td style="color:#FF6B35;font-weight:700;">${a.distance} km</td>
+        <td>${a.duration || '—'}</td>
+        <td style="color:var(--text2);">${a.date || '—'}</td>
+      </tr>`;
+    }).join('');
+  } catch (e) {
+    showToast('Error loading dashboard: ' + e.message, 'error');
+  }
+}
+
+async function loadTokenCount() {
+  try {
+    const tokens = await supabaseFetch('push_tokens?select=token');
+    document.getElementById('token-count').textContent = tokens.length;
+  } catch (e) {
+    document.getElementById('token-count').textContent = '0';
+  }
+}
+
+async function loadUsers() {
+  const grid = document.getElementById('users-grid');
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Loading users...</div>';
+  try {
+    const [profiles, tokens, activities] = await Promise.all([
+      supabaseFetch('profiles?select=*&order=updated_at.desc'),
+      supabaseFetch('push_tokens?select=user_id,token'),
+      supabaseFetch('activities?select=user_id,distance'),
+    ]);
+
+    if (profiles.length === 0) {
+      grid.innerHTML = '<div class="empty"><div class="empty-icon">👥</div>No users yet</div>';
+      return;
+    }
+
+    grid.innerHTML = profiles.map(p => {
+      const userToken = tokens.find(t => t.user_id === p.id);
+      const userActivities = activities.filter(a => a.user_id === p.id);
+      const totalDist = userActivities.reduce((sum, a) => sum + parseFloat(a.distance || 0), 0).toFixed(2);
+
+      return `<div class="user-row">
+        <div class="user-avatar">${(p.name || 'A').charAt(0).toUpperCase()}</div>
+        <div class="user-info">
+          <div class="user-name">${p.name || 'Athlete'}</div>
+          ${userToken
+            ? `<div class="user-token">✅ Push notifications enabled</div>`
+            : `<div class="user-no-token">❌ No push token — notifications disabled</div>`
+          }
+        </div>
+        <div class="user-stats">
+          <div class="user-stat">
+            <div class="user-stat-value">${userActivities.length}</div>
+            <div class="user-stat-label">Activities</div>
+          </div>
+          <div class="user-stat">
+            <div class="user-stat-value">${totalDist}</div>
+            <div class="user-stat-label">km</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    grid.innerHTML = `<div class="empty">Error: ${e.message}</div>`;
+  }
+}
+
+async function loadAllActivities() {
+  const tbody = document.getElementById('all-activities-table');
+  tbody.innerHTML = '<tr><td colspan="7"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>';
+  try {
+    const activities = await supabaseFetch('activities?select=*&order=created_at.desc&limit=100');
+    const userIds = [...new Set(activities.map(a => a.user_id))];
+    const profiles = userIds.length > 0
+      ? await supabaseFetch(`profiles?id=in.(${userIds.join(',')})&select=id,name`)
+      : [];
+
+    if (activities.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-icon">🏃</div>No activities yet</div></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = activities.map(a => {
+      const profile = profiles.find(p => p.id === a.user_id);
+      const typeColor = a.type === 'Running' ? '#FF6B35' : a.type === 'Cycling' ? '#4CAF50' : '#2196F3';
+      const calories = Math.floor(parseFloat(a.distance || 0) * 60);
+      return `<tr>
+        <td>${profile?.name || 'Athlete'}</td>
+        <td><span style="color:${typeColor};font-weight:600;">${a.type}</span></td>
+        <td>${a.name || a.type}</td>
+        <td style="color:#FF6B35;font-weight:700;">${a.distance} km</td>
+        <td>${a.duration || '—'}</td>
+        <td>${calories} kcal</td>
+        <td style="color:var(--text2);">${a.date || '—'}</td>
+      </tr>`;
+    }).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty">Error: ${e.message}</div></td></tr>`;
+  }
+}
+
+function loadTemplates() {
+  const grid = document.getElementById('templates-grid');
+  grid.innerHTML = templates.map((t, i) => `
+    <div onclick="useTemplate(${i})" style="
+      background:var(--card2); border:1px solid var(--border2);
+      border-radius:12px; padding:14px; cursor:pointer;
+      transition:border-color 0.2s;
+    " onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border2)'">
+      <div style="font-size:20px;margin-bottom:8px;">${t.icon}</div>
+      <div style="font-weight:600;font-size:13px;margin-bottom:4px;">${t.title}</div>
+      <div style="color:var(--text3);font-size:12px;line-height:1.4;">${t.body}</div>
+      <div style="color:var(--orange);font-size:11px;margin-top:6px;">→ ${t.screen}</div>
+    </div>
+  `).join('');
+}
+
+function useTemplate(i) {
+  const t = templates[i];
+  document.getElementById('notif-title').value = t.title;
+  document.getElementById('notif-body').value = t.body;
+  document.getElementById('notif-screen').value = t.screen;
+  updatePreview();
+}
+
+function updatePreview() {
+  const title = document.getElementById('notif-title').value || 'Your notification title';
+  const body = document.getElementById('notif-body').value || 'Your notification message will appear here...';
+  const screen = document.getElementById('notif-screen').value || 'Home';
+  document.getElementById('preview-title').textContent = title;
+  document.getElementById('preview-body').textContent = body;
+  document.getElementById('preview-screen').textContent = screen;
+}
+
+async function sendNotification() {
+  const title = document.getElementById('notif-title').value.trim();
+  const body = document.getElementById('notif-body').value.trim();
+  const screen = document.getElementById('notif-screen').value;
+
+  if (!title || !body) {
+    showToast('Please enter title and message', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Sending...';
+
+  try {
+    // Get all push tokens
+    const tokens = await supabaseFetch('push_tokens?select=token,user_id');
+
+    if (tokens.length === 0) {
+      showToast('No devices registered yet. Users need to open the app first.', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '🚀 Send Now';
+      return;
+    }
+
+    // Filter only real Expo push tokens
+    const validTokens = tokens.filter(t => t.token && t.token.startsWith('ExponentPushToken'));
+
+    if (validTokens.length === 0) {
+      showToast('No valid Expo tokens found. Users need to update the app first.', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '🚀 Send Now';
+      return;
+    }
+
+    // Send to Expo Push API
+    const messages = validTokens.map(t => ({
+      to: t.token,
+      title,
+      body,
+      data: { screen },
+      sound: 'default',
+      priority: 'high',
+    }));
+
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-push-notification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SERVICE_KEY}`,
+      },
+      body: JSON.stringify({ messages, title, body, screen }),
+    });
+
+    const result = await res.json();
+    console.log('Push result:', result);
+
+    // Save to history
+    const historyItem = {
+      id: Date.now(),
+      title,
+      body,
+      screen,
+      recipients: validTokens.length,
+      status: 'sent',
+      sentAt: new Date().toLocaleString(),
+    };
+    notifHistory.unshift(historyItem);
+    localStorage.setItem('cf_notif_history', JSON.stringify(notifHistory));
+    loadHistory();
+
+    showToast(`✅ Sent to ${tokens.length} device${tokens.length !== 1 ? 's' : ''}!`, 'success');
+
+    // Clear form
+    document.getElementById('notif-title').value = '';
+    document.getElementById('notif-body').value = '';
+    updatePreview();
+
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+    console.error(e);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🚀 Send Now';
+}
+
+function loadHistory() {
+  const tbody = document.getElementById('history-table');
+  if (notifHistory.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div>No notifications sent yet</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = notifHistory.map(n => `<tr>
+    <td style="font-weight:600;">${n.title}</td>
+    <td style="color:var(--text2);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${n.body}</td>
+    <td><span style="color:var(--orange);font-weight:600;">${n.screen}</span></td>
+    <td>${n.recipients} devices</td>
+    <td><span class="status-badge status-${n.status}">${n.status}</span></td>
+    <td style="color:var(--text2);">${n.sentAt}</td>
+  </tr>`).join('');
+}
+
+function clearHistory() {
+  if (!confirm('Clear all notification history?')) return;
+  notifHistory = [];
+  localStorage.removeItem('cf_notif_history');
+  loadHistory();
+  showToast('History cleared', 'success');
+}
+
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  const icon = document.getElementById('toast-icon');
+  const msgEl = document.getElementById('toast-msg');
+  icon.textContent = type === 'success' ? '✅' : '❌';
+  msgEl.textContent = msg;
+  toast.className = `toast ${type} show`;
+  setTimeout(() => { toast.className = `toast ${type}`; }, 3500);
+}
+
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
+    handleLogin();
+  }
+});
+</script>
+</body>
+</html>
