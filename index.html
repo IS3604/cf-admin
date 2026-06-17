@@ -6,286 +6,139 @@
 <title>Custom Fitness — Admin Panel</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap');
-
   :root {
-    --bg: #080808;
-    --card: #111111;
-    --card2: #161616;
-    --border: #1E1E1E;
-    --border2: #252525;
-    --orange: #FF6B35;
-    --orange-dim: rgba(255,107,53,0.1);
-    --green: #22C55E;
-    --green-dim: rgba(34,197,94,0.1);
-    --red: #EF4444;
-    --red-dim: rgba(239,68,68,0.1);
-    --blue: #3B82F6;
-    --blue-dim: rgba(59,130,246,0.1);
-    --yellow: #F59E0B;
-    --text: #F0F0F0;
-    --text2: #888;
-    --text3: #555;
-    --font: 'Inter', sans-serif;
-    --font-display: 'Space Grotesk', sans-serif;
+    --bg: #080808; --card: #111111; --card2: #161616; --border: #1E1E1E; --border2: #252525;
+    --orange: #FF6B35; --orange-dim: rgba(255,107,53,0.1); --green: #22C55E; --green-dim: rgba(34,197,94,0.1);
+    --red: #EF4444; --red-dim: rgba(239,68,68,0.1); --blue: #3B82F6; --blue-dim: rgba(59,130,246,0.1);
+    --yellow: #F59E0B; --purple: #8B5CF6;
+    --text: #F0F0F0; --text2: #888; --text3: #555; --font: 'Inter', sans-serif; --font-display: 'Space Grotesk', sans-serif;
   }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
   body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.5; min-height: 100vh; }
-
-  /* LOGIN */
-  #login-screen {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    background: var(--bg);
-  }
-  .login-card {
-    background: var(--card); border: 1px solid var(--border2);
-    border-radius: 20px; padding: 40px; width: 100%; max-width: 400px;
-  }
+  #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .login-card { background: var(--card); border: 1px solid var(--border2); border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; }
   .login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
-  .login-logo-icon {
-    width: 40px; height: 40px; border-radius: 12px;
-    background: var(--orange); display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display); font-weight: 800; font-size: 14px; color: #fff;
-  }
+  .login-logo-icon { width: 40px; height: 40px; border-radius: 12px; background: var(--orange); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 14px; color: #fff; }
   .login-logo span { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
-  .login-title { font-size: 22px; font-weight: 700; font-family: var(--font-display); margin-bottom: 6px; }
-  .login-sub { color: var(--text2); font-size: 13px; margin-bottom: 28px; }
   .form-group { margin-bottom: 16px; }
-  .form-label { color: var(--text2); font-size: 12px; font-weight: 600; margin-bottom: 6px; display: block; letter-spacing: 0.5px; }
-  .form-input {
-    width: 100%; padding: 12px 14px;
-    background: var(--card2); border: 1px solid var(--border2);
-    border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font);
-    outline: none; transition: border-color 0.2s;
-  }
+  .form-label { color: var(--text2); font-size: 12px; font-weight: 600; margin-bottom: 6px; display: block; }
+  .form-input { width: 100%; padding: 12px 14px; background: var(--card2); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font); outline: none; transition: border-color 0.2s; }
   .form-input:focus { border-color: var(--orange); }
-  .btn-login {
-    width: 100%; padding: 13px;
-    background: var(--orange); color: #fff; border: none;
-    border-radius: 10px; font-size: 15px; font-weight: 700;
-    cursor: pointer; font-family: var(--font);
-    transition: opacity 0.2s;
-  }
-  .btn-login:hover { opacity: 0.85; }
+  .form-textarea { width: 100%; padding: 12px 14px; background: var(--card2); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font); outline: none; resize: vertical; min-height: 80px; }
+  .form-textarea:focus { border-color: var(--orange); }
+  .form-select { width: 100%; padding: 12px 14px; background: var(--card2); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font); outline: none; cursor: pointer; }
+  .btn-login { width: 100%; padding: 13px; background: var(--orange); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: var(--font); }
   .login-error { color: var(--red); font-size: 13px; margin-top: 12px; text-align: center; display: none; }
-
-  /* LAYOUT */
   #app { display: none; min-height: 100vh; }
-  .sidebar {
-    position: fixed; left: 0; top: 0; bottom: 0; width: 220px;
-    background: var(--card); border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; z-index: 50;
-  }
-  .sidebar-logo {
-    padding: 20px; display: flex; align-items: center; gap: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  .sidebar-logo-icon {
-    width: 32px; height: 32px; border-radius: 8px;
-    background: var(--orange); display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display); font-weight: 800; font-size: 11px; color: #fff;
-  }
-  .sidebar-logo span { font-family: var(--font-display); font-size: 14px; font-weight: 700; }
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 50; overflow-y: auto; }
+  .sidebar-logo { padding: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--orange); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; color: #fff; }
   .sidebar-label { color: var(--text3); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 20px 16px 8px; }
-  .nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 16px; border-radius: 8px; margin: 2px 8px;
-    cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 500;
-    transition: all 0.15s;
-  }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 8px; margin: 2px 8px; cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 500; transition: all 0.15s; }
   .nav-item:hover { background: var(--card2); color: var(--text); }
   .nav-item.active { background: var(--orange-dim); color: var(--orange); }
-  .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
   .sidebar-bottom { margin-top: auto; padding: 16px; border-top: 1px solid var(--border); }
   .sidebar-user { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .sidebar-avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: var(--orange); display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 12px; color: #fff;
-  }
+  .sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; }
   .sidebar-user-info { flex: 1; min-width: 0; }
   .sidebar-user-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sidebar-user-role { font-size: 11px; color: var(--orange); }
-  .btn-logout {
-    width: 100%; padding: 8px; background: var(--card2);
-    border: 1px solid var(--border2); border-radius: 8px;
-    color: var(--text2); font-size: 12px; cursor: pointer; font-family: var(--font);
-    transition: all 0.2s;
-  }
+  .btn-logout { width: 100%; padding: 8px; background: var(--card2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text2); font-size: 12px; cursor: pointer; font-family: var(--font); }
   .btn-logout:hover { border-color: var(--red); color: var(--red); }
-
   .main { margin-left: 220px; padding: 24px; min-height: 100vh; }
   .page { display: none; }
   .page.active { display: block; }
-
-  /* TOPBAR */
-  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
   .page-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
   .page-sub { color: var(--text2); font-size: 13px; margin-top: 2px; }
-  .topbar-right { display: flex; align-items: center; gap: 10px; }
-  .badge-live {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--green-dim); border: 1px solid rgba(34,197,94,0.3);
-    border-radius: 20px; padding: 5px 12px;
-    font-size: 12px; font-weight: 600; color: var(--green);
-  }
+  .badge-live { display: flex; align-items: center; gap: 6px; background: var(--green-dim); border: 1px solid rgba(34,197,94,0.3); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--green); }
   .badge-live span { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-
-  /* STAT CARDS */
   .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-  .stat-card {
-    background: var(--card); border: 1px solid var(--border2);
-    border-radius: 14px; padding: 18px;
-  }
+  .stat-card { background: var(--card); border: 1px solid var(--border2); border-radius: 14px; padding: 18px; }
   .stat-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
   .stat-card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
   .stat-card-label { color: var(--text2); font-size: 12px; font-weight: 500; }
   .stat-card-value { font-family: var(--font-display); font-size: 28px; font-weight: 800; }
   .stat-card-sub { color: var(--text3); font-size: 11px; margin-top: 4px; }
-
-  /* NOTIFICATION COMPOSER */
-  .composer-card {
-    background: var(--card); border: 1px solid var(--border2);
-    border-radius: 16px; padding: 24px; margin-bottom: 20px;
-  }
+  .composer-card { background: var(--card); border: 1px solid var(--border2); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
   .composer-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-bottom: 4px; }
   .composer-sub { color: var(--text2); font-size: 13px; margin-bottom: 20px; }
   .composer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-  .form-textarea {
-    width: 100%; padding: 12px 14px;
-    background: var(--card2); border: 1px solid var(--border2);
-    border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font);
-    outline: none; resize: vertical; min-height: 80px;
-    transition: border-color 0.2s;
-  }
-  .form-textarea:focus { border-color: var(--orange); }
-  .form-select {
-    width: 100%; padding: 12px 14px;
-    background: var(--card2); border: 1px solid var(--border2);
-    border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font);
-    outline: none; cursor: pointer;
-    transition: border-color 0.2s;
-  }
-  .form-select:focus { border-color: var(--orange); }
   .composer-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
   .recipient-info { display: flex; align-items: center; gap: 8px; color: var(--text2); font-size: 13px; }
   .recipient-count { color: var(--orange); font-weight: 700; }
-  .btn-send {
-    display: flex; align-items: center; gap: 8px;
-    padding: 12px 24px; background: var(--orange);
-    border: none; border-radius: 10px;
-    color: #fff; font-size: 14px; font-weight: 700;
-    cursor: pointer; font-family: var(--font);
-    transition: opacity 0.2s, transform 0.1s;
-  }
-  .btn-send:hover { opacity: 0.85; }
-  .btn-send:active { transform: scale(0.97); }
+  .btn-send { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--orange); border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font); }
   .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  /* PREVIEW */
-  .preview-card {
-    background: var(--card); border: 1px solid var(--border2);
-    border-radius: 16px; padding: 24px; margin-bottom: 20px;
-  }
-  .notif-preview {
-    background: #1C1C1E; border-radius: 14px; padding: 14px 16px;
-    display: flex; gap: 12px; align-items: flex-start;
-    margin-top: 16px;
-  }
-  .notif-preview-icon {
-    width: 40px; height: 40px; border-radius: 10px;
-    background: var(--orange); display: flex; align-items: center; justify-content: center;
-    font-size: 18px; flex-shrink: 0;
-  }
+  .notif-preview { background: #1C1C1E; border-radius: 14px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; margin-top: 16px; }
+  .notif-preview-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--orange); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
   .notif-preview-app { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
   .notif-preview-title { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
   .notif-preview-body { color: var(--text2); font-size: 13px; line-height: 1.4; }
-  .notif-preview-time { font-size: 11px; color: var(--text3); margin-top: 4px; }
-
-  /* HISTORY TABLE */
-  .table-card {
-    background: var(--card); border: 1px solid var(--border2);
-    border-radius: 16px; overflow: hidden;
-  }
-  .table-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 20px; border-bottom: 1px solid var(--border);
-  }
+  .table-card { background: var(--card); border: 1px solid var(--border2); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+  .table-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border); }
   .table-title { font-weight: 700; font-size: 15px; }
   table { width: 100%; border-collapse: collapse; }
-  th {
-    text-align: left; padding: 12px 20px;
-    color: var(--text3); font-size: 11px; font-weight: 700;
-    letter-spacing: 0.8px; text-transform: uppercase;
-    background: var(--card2); border-bottom: 1px solid var(--border);
-  }
-  td { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  th { text-align: left; padding: 12px 20px; color: var(--text3); font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--card2); border-bottom: 1px solid var(--border); }
+  td { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: rgba(255,255,255,0.01); }
-  .status-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
-  }
+  .status-badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
   .status-sent { background: var(--green-dim); color: var(--green); }
   .status-failed { background: var(--red-dim); color: var(--red); }
   .status-pending { background: var(--orange-dim); color: var(--orange); }
-
-  /* USERS PAGE */
-  .users-grid { display: grid; gap: 10px; }
-  .user-row {
-    background: var(--card); border: 1px solid var(--border2);
-    border-radius: 12px; padding: 14px 18px;
-    display: flex; align-items: center; gap: 14px;
-  }
-  .user-avatar {
-    width: 38px; height: 38px; border-radius: 50%;
-    background: var(--orange); display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 14px; color: #fff; flex-shrink: 0;
-  }
+  .user-row { background: var(--card); border: 1px solid var(--border2); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .user-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #fff; flex-shrink: 0; }
   .user-info { flex: 1; }
   .user-name { font-weight: 600; font-size: 14px; }
-  .user-email { color: var(--text2); font-size: 12px; }
   .user-token { color: var(--green); font-size: 11px; margin-top: 2px; }
   .user-no-token { color: var(--text3); font-size: 11px; margin-top: 2px; }
   .user-stats { display: flex; gap: 20px; }
   .user-stat { text-align: center; }
   .user-stat-value { font-weight: 700; font-size: 15px; color: var(--orange); }
   .user-stat-label { color: var(--text3); font-size: 10px; }
-
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px; z-index: 999;
-    background: var(--card); border: 1px solid var(--border2);
-    border-radius: 12px; padding: 14px 18px;
-    display: flex; align-items: center; gap: 10px;
-    font-size: 13px; font-weight: 500;
-    transform: translateY(100px); opacity: 0;
-    transition: all 0.3s ease;
-    max-width: 320px;
-  }
+  .chart-container { background: var(--card); border: 1px solid var(--border2); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+  .chart-title { font-weight: 700; font-size: 15px; margin-bottom: 16px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .donut-row { display: flex; gap: 20px; align-items: center; }
+  .donut-legend { display: flex; flex-direction: column; gap: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; display: none; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal-box { background: var(--card); border: 1px solid var(--border2); border-radius: 20px; padding: 28px; width: 100%; max-width: 520px; max-height: 80vh; overflow-y: auto; }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .modal-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+  .modal-close { width: 32px; height: 32px; border-radius: 8px; background: var(--card2); border: 1px solid var(--border2); color: var(--text2); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .profile-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .profile-stat { background: var(--card2); border-radius: 10px; padding: 12px; text-align: center; }
+  .profile-stat-value { font-size: 20px; font-weight: 700; color: var(--orange); }
+  .profile-stat-label { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .profile-info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .profile-info-row:last-child { border-bottom: none; }
+  .profile-info-label { color: var(--text2); }
+  .profile-info-value { font-weight: 600; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .tag-run { background: rgba(255,107,53,0.15); color: #FF6B35; }
+  .tag-cyc { background: rgba(76,175,80,0.15); color: #4CAF50; }
+  .tag-walk { background: rgba(33,150,243,0.15); color: #2196F3; }
+  .search-input { padding: 8px 14px; background: var(--card2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-size: 13px; font-family: var(--font); outline: none; width: 200px; }
+  .search-input:focus { border-color: var(--orange); }
+  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 999; background: var(--card); border: 1px solid var(--border2); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; max-width: 320px; }
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast.success { border-color: rgba(34,197,94,0.3); }
   .toast.error { border-color: rgba(239,68,68,0.3); }
-  .toast-icon { font-size: 18px; }
-
-  /* LOADING */
   .loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--text3); gap: 10px; }
   .spinner { width: 18px; height: 18px; border: 2px solid var(--border2); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.6s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
   .empty { text-align: center; padding: 40px; color: var(--text3); }
   .empty-icon { font-size: 32px; margin-bottom: 10px; }
-
-  .section-divider { height: 1px; background: var(--border); margin: 24px 0; }
-
-  /* RESPONSIVE */
   @media (max-width: 900px) {
     .sidebar { width: 60px; }
     .sidebar-logo span, .nav-item span, .sidebar-label, .sidebar-user-info, .btn-logout { display: none; }
     .main { margin-left: 60px; }
-    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .stats-grid, .two-col { grid-template-columns: repeat(2,1fr); }
     .composer-grid { grid-template-columns: 1fr; }
   }
 </style>
@@ -295,323 +148,252 @@
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="login-logo">
-      <div class="login-logo-icon">CF</div>
-      <span>Custom Fitness</span>
-    </div>
-    <div class="login-title">Admin Panel</div>
-    <div class="login-sub">Sign in with your Supabase credentials</div>
-
+    <div class="login-logo"><div class="login-logo-icon">CF</div><span>Custom Fitness Admin</span></div>
+    <div style="font-size:22px;font-weight:700;font-family:var(--font-display);margin-bottom:6px;">Admin Panel</div>
+    <div style="color:var(--text2);font-size:13px;margin-bottom:28px;">Sign in with your admin credentials</div>
     <input type="hidden" id="supabase-url" value="https://uxiozoaikghvtcywzhbp.supabase.co" />
     <input type="hidden" id="service-key" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4aW96b2Fpa2dodnRjeXd6aGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDk0NzA0NCwiZXhwIjoyMDk2NTIzMDQ0fQ.o9IJvHfC99vYbvqE2xD9TLjsuKdruS6WQW40ZmdXlU4" />
-    <div class="form-group">
-      <label class="form-label">ADMIN EMAIL</label>
-      <input class="form-input" id="admin-email" type="email" placeholder="your@email.com" />
-    </div>
-    <div class="form-group">
-      <label class="form-label">ADMIN PASSWORD</label>
-      <input class="form-input" id="admin-password" type="password" placeholder="••••••••" />
-    </div>
-    <button class="btn-login" onclick="handleLogin()">Sign In to Admin</button>
+    <div class="form-group"><label class="form-label">EMAIL</label><input class="form-input" id="admin-email" type="email" placeholder="your@email.com" /></div>
+    <div class="form-group"><label class="form-label">PASSWORD</label><input class="form-input" id="admin-password" type="password" placeholder="••••••••" /></div>
+    <button class="btn-login" onclick="handleLogin()">Sign In</button>
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app">
-  <!-- Sidebar -->
   <div class="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-icon">CF</div>
-      <span>Admin</span>
-    </div>
+    <div class="sidebar-logo"><div class="sidebar-logo-icon">CF</div><span>Admin</span></div>
     <div class="sidebar-label">Main</div>
-    <div class="nav-item active" onclick="showPage('dashboard')">
-      <span class="nav-icon">📊</span><span>Dashboard</span>
-    </div>
-    <div class="nav-item" onclick="showPage('notifications')">
-      <span class="nav-icon">🔔</span><span>Send Notification</span>
-    </div>
-    <div class="nav-item" onclick="showPage('history')">
-      <span class="nav-icon">📋</span><span>History</span>
-    </div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span><span>Dashboard</span></div>
+    <div class="nav-item" onclick="showPage('analytics',this)"><span class="nav-icon">📈</span><span>Analytics</span></div>
+    <div class="sidebar-label">Notifications</div>
+    <div class="nav-item" onclick="showPage('notifications',this)"><span class="nav-icon">🔔</span><span>Send Now</span></div>
+    <div class="nav-item" onclick="showPage('schedule',this)"><span class="nav-icon">🗓️</span><span>Schedule</span></div>
+    <div class="nav-item" onclick="showPage('history',this)"><span class="nav-icon">📋</span><span>History</span></div>
     <div class="sidebar-label">Data</div>
-    <div class="nav-item" onclick="showPage('users')">
-      <span class="nav-icon">👥</span><span>Users</span>
-    </div>
-    <div class="nav-item" onclick="showPage('activities')">
-      <span class="nav-icon">🏃</span><span>Activities</span>
-    </div>
+    <div class="nav-item" onclick="showPage('users',this)"><span class="nav-icon">👥</span><span>Users</span></div>
+    <div class="nav-item" onclick="showPage('activities',this)"><span class="nav-icon">🏃</span><span>Activities</span></div>
+    <div class="nav-item" onclick="showPage('leaderboard',this)"><span class="nav-icon">🏆</span><span>Leaderboard</span></div>
     <div class="sidebar-bottom">
       <div class="sidebar-user">
         <div class="sidebar-avatar" id="sidebar-avatar">A</div>
-        <div class="sidebar-user-info">
-          <div class="sidebar-user-name" id="sidebar-email">Admin</div>
-          <div class="sidebar-user-role">Administrator</div>
-        </div>
+        <div class="sidebar-user-info"><div class="sidebar-user-name" id="sidebar-email">Admin</div><div class="sidebar-user-role">Administrator</div></div>
       </div>
       <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
     </div>
   </div>
 
-  <!-- Main Content -->
   <div class="main">
 
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="topbar">
-        <div>
-          <div class="page-title">Dashboard</div>
-          <div class="page-sub">Custom Fitness app overview</div>
-        </div>
-        <div class="topbar-right">
+        <div><div class="page-title">Dashboard</div><div class="page-sub">Custom Fitness overview</div></div>
+        <div style="display:flex;gap:10px;align-items:center;">
           <div class="badge-live"><span></span> Live</div>
+          <button onclick="loadDashboard()" style="padding:8px 14px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">🔄 Refresh</button>
         </div>
       </div>
-
-      <div class="stats-grid" id="stats-grid">
-        <div class="stat-card">
-          <div class="stat-card-top">
-            <div class="stat-card-label">Total Users</div>
-            <div class="stat-card-icon" style="background:var(--orange-dim);">👥</div>
-          </div>
-          <div class="stat-card-value" id="stat-users">—</div>
-          <div class="stat-card-sub">Registered accounts</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-top">
-            <div class="stat-card-label">Total Activities</div>
-            <div class="stat-card-icon" style="background:var(--green-dim);">🏃</div>
-          </div>
-          <div class="stat-card-value" id="stat-activities">—</div>
-          <div class="stat-card-sub">Across all users</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-top">
-            <div class="stat-card-label">Total Distance</div>
-            <div class="stat-card-icon" style="background:var(--blue-dim);">📍</div>
-          </div>
-          <div class="stat-card-value" id="stat-distance">—</div>
-          <div class="stat-card-sub">km tracked globally</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-top">
-            <div class="stat-card-label">Push Tokens</div>
-            <div class="stat-card-icon" style="background:rgba(245,158,11,0.1);">🔔</div>
-          </div>
-          <div class="stat-card-value" id="stat-tokens">—</div>
-          <div class="stat-card-sub">Devices registered</div>
-        </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Users</div><div class="stat-card-icon" style="background:var(--orange-dim);">👥</div></div><div class="stat-card-value" id="stat-users">—</div><div class="stat-card-sub">Registered accounts</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Activities</div><div class="stat-card-icon" style="background:var(--green-dim);">🏃</div></div><div class="stat-card-value" id="stat-activities">—</div><div class="stat-card-sub">Across all users</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Distance</div><div class="stat-card-icon" style="background:var(--blue-dim);">📍</div></div><div class="stat-card-value" id="stat-distance">—</div><div class="stat-card-sub">km tracked globally</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Push Devices</div><div class="stat-card-icon" style="background:rgba(245,158,11,0.1);">🔔</div></div><div class="stat-card-value" id="stat-tokens">—</div><div class="stat-card-sub">Registered devices</div></div>
       </div>
-
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Running</div><div class="stat-card-icon" style="background:var(--orange-dim);">🏃</div></div><div class="stat-card-value" id="stat-runs" style="color:var(--orange);">—</div><div class="stat-card-sub">Total runs</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Cycling</div><div class="stat-card-icon" style="background:var(--green-dim);">🚴</div></div><div class="stat-card-value" id="stat-cycles" style="color:var(--green);">—</div><div class="stat-card-sub">Total rides</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Walking</div><div class="stat-card-icon" style="background:var(--blue-dim);">🚶</div></div><div class="stat-card-value" id="stat-walks" style="color:var(--blue);">—</div><div class="stat-card-sub">Total walks</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Calories</div><div class="stat-card-icon" style="background:var(--red-dim);">🔥</div></div><div class="stat-card-value" id="stat-calories" style="color:var(--red);">—</div><div class="stat-card-sub">Burned globally</div></div>
+      </div>
       <div class="table-card">
-        <div class="table-header">
-          <div class="table-title">Recent Activities</div>
+        <div class="table-header"><div class="table-title">Recent Activities</div></div>
+        <table><thead><tr><th>User</th><th>Type</th><th>Name</th><th>Distance</th><th>Duration</th><th>Calories</th><th>Date</th></tr></thead>
+        <tbody id="recent-activities-table"><tr><td colspan="7"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="page" id="page-analytics">
+      <div class="topbar"><div><div class="page-title">Analytics</div><div class="page-sub">App performance insights</div></div></div>
+      <div class="two-col">
+        <div class="chart-container">
+          <div class="chart-title">Activities by Type</div>
+          <div class="donut-row">
+            <canvas id="donut-chart" width="120" height="120"></canvas>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Type</th>
-              <th>Name</th>
-              <th>Distance</th>
-              <th>Duration</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody id="recent-activities-table">
-            <tr><td colspan="6"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>
-          </tbody>
-        </table>
+        <div class="chart-container">
+          <div class="chart-title">Top 5 Users by Distance</div>
+          <div id="top-users-chart"></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="chart-container">
+          <div class="chart-title">Distance by Type (km)</div>
+          <div style="display:flex;gap:12px;height:120px;align-items:flex-end;" id="distance-bars"></div>
+        </div>
+        <div class="chart-container">
+          <div class="chart-title">App Stats Summary</div>
+          <div id="app-summary"></div>
+        </div>
       </div>
     </div>
 
     <!-- SEND NOTIFICATION -->
     <div class="page" id="page-notifications">
-      <div class="topbar">
-        <div>
-          <div class="page-title">Send Notification</div>
-          <div class="page-sub">Fire a live push notification to all users</div>
-        </div>
-      </div>
-
+      <div class="topbar"><div><div class="page-title">Send Notification</div><div class="page-sub">Fire a live push notification to all users</div></div></div>
       <div class="composer-card">
         <div class="composer-title">Compose Notification</div>
-        <div class="composer-sub">This will be sent immediately to all registered devices</div>
-
-        <div class="form-group">
-          <label class="form-label">TITLE</label>
-          <input class="form-input" id="notif-title" type="text" placeholder="e.g. Time to move!" oninput="updatePreview()" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">MESSAGE</label>
-          <textarea class="form-textarea" id="notif-body" placeholder="e.g. Keep your streak alive! Log a run, ride or walk today." oninput="updatePreview()"></textarea>
-        </div>
+        <div class="composer-sub">Sent immediately to all registered devices</div>
+        <div class="form-group"><label class="form-label">TITLE</label><input class="form-input" id="notif-title" type="text" placeholder="e.g. Time to move!" oninput="updatePreview()" /></div>
+        <div class="form-group"><label class="form-label">MESSAGE</label><textarea class="form-textarea" id="notif-body" placeholder="Notification message..." oninput="updatePreview()"></textarea></div>
         <div class="composer-grid">
-          <div class="form-group" style="margin:0;">
-            <label class="form-label">TARGET SCREEN</label>
-            <select class="form-select" id="notif-screen" onchange="updatePreview()">
-              <option value="Home">Home</option>
-              <option value="Activity">Activity</option>
-              <option value="History">History</option>
-              <option value="Stats">Stats</option>
-              <option value="Profile">Profile</option>
+          <div class="form-group" style="margin:0;"><label class="form-label">TARGET SCREEN</label>
+            <select class="form-select" id="notif-screen" onchange="updatePreview();toggleNotifUrl()">
+              <option value="Home">Home</option><option value="Activity">Activity</option><option value="History">History</option><option value="Stats">Stats</option><option value="Profile">Profile</option><option value="url">🌐 External URL</option>
             </select>
-          </div>
-          <div class="form-group" style="margin:0;">
-            <label class="form-label">RECIPIENTS</label>
-            <select class="form-select" id="notif-target">
-              <option value="all">All Users</option>
-            </select>
-          </div>
+            <input class="form-input" id="notif-url" type="url" placeholder="https://..." style="margin-top:8px;display:none;" oninput="updatePreview()" /></div>
+          <div class="form-group" style="margin:0;"><label class="form-label">RECIPIENTS</label><select class="form-select" id="notif-target" onchange="updateRecipientCount()"><option value="all">All Users</option></select></div>
         </div>
-
         <div class="composer-footer">
-          <div class="recipient-info">
-            🎯 Sending to <span class="recipient-count" id="token-count">—</span> devices
-          </div>
-          <button class="btn-send" id="send-btn" onclick="sendNotification()">
-            🚀 Send Now
-          </button>
+          <div class="recipient-info">🎯 Sending to <span class="recipient-count" id="token-count">—</span> devices</div>
+          <button class="btn-send" id="send-btn" onclick="sendNotification()">🚀 Send Now</button>
         </div>
       </div>
-
-      <!-- Preview -->
-      <div class="preview-card">
-        <div class="composer-title">Preview</div>
-        <div class="composer-sub">How the notification will appear on Android</div>
+      <div class="composer-card">
+        <div class="composer-title">Live Preview</div>
         <div class="notif-preview">
           <div class="notif-preview-icon">💪</div>
-          <div>
-            <div class="notif-preview-app">CustomFitness · now</div>
-            <div class="notif-preview-title" id="preview-title">Your notification title</div>
-            <div class="notif-preview-body" id="preview-body">Your notification message will appear here...</div>
-            <div class="notif-preview-time">Opens → <span id="preview-screen">Home</span> screen</div>
-          </div>
+          <div><div class="notif-preview-app">CustomFitness · now</div><div class="notif-preview-title" id="preview-title">Your notification title</div><div class="notif-preview-body" id="preview-body">Your message...</div><div style="font-size:11px;color:var(--text3);margin-top:4px;">Opens → <span id="preview-screen">Home</span></div></div>
         </div>
       </div>
-
-      <!-- Quick Templates -->
       <div class="composer-card">
         <div class="composer-title">Quick Templates</div>
-        <div class="composer-sub">Tap to use a pre-written notification</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;" id="templates-grid">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;" id="templates-grid"></div>
+      </div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div class="page" id="page-schedule">
+      <div class="topbar"><div><div class="page-title">Schedule Notification</div><div class="page-sub">Send at a specific future time</div></div></div>
+      <div class="composer-card">
+        <div class="composer-title">Schedule a Notification</div>
+        <div class="composer-sub">It fires automatically at the set time</div>
+        <div class="form-group"><label class="form-label">TITLE</label><input class="form-input" id="sched-title" type="text" placeholder="Notification title" /></div>
+        <div class="form-group"><label class="form-label">MESSAGE</label><textarea class="form-textarea" id="sched-body" placeholder="Notification message..."></textarea></div>
+        <div class="composer-grid">
+          <div class="form-group" style="margin:0;"><label class="form-label">TARGET SCREEN</label>
+            <select class="form-select" id="sched-screen" onchange="toggleSchedUrl()">
+              <option value="Home">Home</option><option value="Activity">Activity</option><option value="History">History</option><option value="Stats">Stats</option><option value="Profile">Profile</option><option value="url">🌐 External URL</option>
+            </select>
+            <input class="form-input" id="sched-url" type="url" placeholder="https://..." style="margin-top:8px;display:none;" /></div>
+          <div class="form-group" style="margin:0;"><label class="form-label">DATE & TIME</label><input class="form-input" id="sched-datetime" type="datetime-local" /></div>
         </div>
+        <div style="margin-top:16px;display:flex;justify-content:flex-end;"><button class="btn-send" onclick="scheduleNotification()">🗓️ Schedule</button></div>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><div class="table-title">Scheduled</div>
+          <button onclick="clearAllScheduled()" style="padding:6px 12px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);border-radius:8px;color:var(--red);font-size:12px;cursor:pointer;font-family:var(--font);">Clear All</button>
+        </div>
+        <table><thead><tr><th>Title</th><th>Message</th><th>Screen</th><th>Scheduled For</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="scheduled-table"><tr><td colspan="6"><div class="empty"><div class="empty-icon">🗓️</div>No scheduled notifications</div></td></tr></tbody></table>
       </div>
     </div>
 
     <!-- HISTORY -->
     <div class="page" id="page-history">
-      <div class="topbar">
-        <div>
-          <div class="page-title">Notification History</div>
-          <div class="page-sub">All notifications sent from admin panel</div>
-        </div>
+      <div class="topbar"><div><div class="page-title">Notification History</div><div class="page-sub">All notifications sent</div></div>
         <button onclick="clearHistory()" style="padding:8px 16px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);border-radius:8px;color:var(--red);font-size:12px;cursor:pointer;font-family:var(--font);">Clear History</button>
       </div>
-
-      <div class="table-card">
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Message</th>
-              <th>Screen</th>
-              <th>Recipients</th>
-              <th>Status</th>
-              <th>Sent At</th>
-            </tr>
-          </thead>
-          <tbody id="history-table">
-            <tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div>No notifications sent yet</div></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="table-card"><table><thead><tr><th>Title</th><th>Message</th><th>Screen</th><th>Recipients</th><th>Status</th><th>Sent At</th></tr></thead>
+      <tbody id="history-table"><tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div>No notifications sent yet</div></td></tr></tbody></table></div>
     </div>
 
     <!-- USERS -->
     <div class="page" id="page-users">
       <div class="topbar">
-        <div>
-          <div class="page-title">Users</div>
-          <div class="page-sub">All registered Custom Fitness users</div>
+        <div><div class="page-title">Users</div><div class="page-sub">All registered users</div></div>
+        <div style="display:flex;gap:10px;">
+          <input class="search-input" id="user-search" placeholder="🔍 Search users..." oninput="filterUsers()" />
+          <button onclick="downloadUserReport()" style="padding:8px 16px;background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);border-radius:8px;color:var(--green);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">⬇ Download CSV</button>
         </div>
       </div>
-      <div class="users-grid" id="users-grid">
-        <div class="loading"><div class="spinner"></div> Loading users...</div>
-      </div>
+      <div id="users-grid"><div class="loading"><div class="spinner"></div> Loading users...</div></div>
     </div>
 
     <!-- ACTIVITIES -->
     <div class="page" id="page-activities">
       <div class="topbar">
-        <div>
-          <div class="page-title">All Activities</div>
-          <div class="page-sub">Every activity logged across all users</div>
+        <div><div class="page-title">All Activities</div><div class="page-sub">Every activity logged</div></div>
+        <div style="display:flex;gap:10px;">
+          <select class="form-select" id="activity-filter" onchange="filterActivities()" style="width:140px;">
+            <option value="All">All Types</option><option value="Running">Running</option><option value="Cycling">Cycling</option><option value="Walking">Walking</option>
+          </select>
+          <button onclick="downloadActivityReport()" style="padding:8px 16px;background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);border-radius:8px;color:var(--green);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">⬇ Download CSV</button>
         </div>
       </div>
-      <div class="table-card">
-        <table>
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Type</th>
-              <th>Name</th>
-              <th>Distance</th>
-              <th>Duration</th>
-              <th>Calories</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody id="all-activities-table">
-            <tr><td colspan="7"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>
-          </tbody>
-        </table>
+      <div class="table-card"><table><thead><tr><th>User</th><th>Type</th><th>Name</th><th>Distance</th><th>Duration</th><th>Pace</th><th>Calories</th><th>Date</th></tr></thead>
+      <tbody id="all-activities-table"><tr><td colspan="8"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody></table></div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="page" id="page-leaderboard">
+      <div class="topbar"><div><div class="page-title">Leaderboard</div><div class="page-sub">Top athletes by total distance</div></div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="loadLeaderboard('Running')" id="lb-run" style="padding:8px 14px;background:rgba(255,107,53,0.15);border:1px solid #FF6B35;border-radius:8px;color:#FF6B35;font-size:12px;cursor:pointer;font-family:var(--font);">🏃 Running</button>
+          <button onclick="loadLeaderboard('Cycling')" id="lb-cyc" style="padding:8px 14px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">🚴 Cycling</button>
+          <button onclick="loadLeaderboard('Walking')" id="lb-walk" style="padding:8px 14px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">🚶 Walking</button>
+        </div>
       </div>
+      <div id="leaderboard-content"><div class="loading"><div class="spinner"></div> Loading...</div></div>
     </div>
 
   </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast">
-  <span class="toast-icon" id="toast-icon">✅</span>
-  <span id="toast-msg">Notification sent!</span>
+<!-- User Modal -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">User Profile</div>
+      <button class="modal-close" onclick="closeUserModal()">✕</button>
+    </div>
+    <div id="user-modal-content"></div>
+  </div>
 </div>
 
+<div class="toast" id="toast"><span id="toast-icon">✅</span><span id="toast-msg">Done!</span></div>
+
 <script>
-let SUPABASE_URL = '';
-let SERVICE_KEY = '';
+let SUPABASE_URL = '', SERVICE_KEY = '';
+let allUsers = [], allActivities = [], allProfiles = [];
 let notifHistory = JSON.parse(localStorage.getItem('cf_notif_history') || '[]');
+const ADMIN_EMAIL = 'ec21ishpreetsingh@global.org.in';
+const ADMIN_PASSWORD = 'superadmin@123';
 
 const templates = [
   { title: 'Time to move!', body: 'Keep your streak alive! Log a run, ride or walk today.', screen: 'Activity', icon: '🏃' },
   { title: 'Check the leaderboard!', body: 'See how you rank against other athletes this week.', screen: 'Home', icon: '🏆' },
   { title: 'Weekend warrior time!', body: 'Perfect day for a long run or ride. Get outside!', screen: 'Activity', icon: '💪' },
   { title: 'Update your body stats!', body: 'Track your fitness progress. Update your weight and height.', screen: 'Profile', icon: '⚖️' },
-  { title: 'New challenge unlocked!', body: 'Can you hit 10km this week? Start your activity now!', screen: 'Activity', icon: '🎯' },
+  { title: 'New challenge!', body: 'Can you hit 10km this week? Start your activity now!', screen: 'Activity', icon: '🎯' },
   { title: 'You are on a streak!', body: 'Keep going! Log an activity today to maintain your streak.', screen: 'Stats', icon: '🔥' },
+  { title: 'Midweek check-in!', body: "You're halfway through the week. How's your fitness goal going?", screen: 'Stats', icon: '📊' },
+  { title: 'App update!', body: 'New features have been added. Check out the latest update!', screen: 'Home', icon: '🆕' },
 ];
 
 async function supabaseFetch(path, options = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...options,
-    headers: {
-      'apikey': SERVICE_KEY,
-      'Authorization': `Bearer ${SERVICE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation',
-      ...options.headers,
-    },
+    headers: { 'apikey': SERVICE_KEY, 'Authorization': `Bearer ${SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...options.headers },
   });
   if (!res.ok) throw new Error(await res.text());
   const text = await res.text();
   return text ? JSON.parse(text) : [];
 }
-
-// Hardcoded admin credentials — change these to your own
-const ADMIN_EMAIL = 'ec21ishpreetsingh@global.org.in';
-const ADMIN_PASSWORD = 'superadmin@123';
 
 async function handleLogin() {
   const url = document.getElementById('supabase-url').value.trim();
@@ -619,213 +401,313 @@ async function handleLogin() {
   const email = document.getElementById('admin-email').value.trim();
   const pass = document.getElementById('admin-password').value.trim();
   const errEl = document.getElementById('login-error');
-
-  if (!email || !pass) {
-    errEl.textContent = 'Please fill in all fields.';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  // Check against hardcoded admin credentials
-  if (email !== ADMIN_EMAIL || pass !== ADMIN_PASSWORD) {
-    errEl.textContent = 'Invalid admin credentials.';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  SUPABASE_URL = url;
-  SERVICE_KEY = key;
-
+  if (!email || !pass) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display = 'block'; return; }
+  if (email !== ADMIN_EMAIL || pass !== ADMIN_PASSWORD) { errEl.textContent = 'Invalid admin credentials.'; errEl.style.display = 'block'; return; }
+  SUPABASE_URL = url; SERVICE_KEY = key;
   try {
-    // Verify against Supabase
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-      method: 'POST',
-      headers: { 'apikey': SERVICE_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password: pass }),
-    });
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, { method: 'POST', headers: { 'apikey': SERVICE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) });
     const data = await res.json();
     if (data.error) throw new Error(data.error_description || data.error);
-
-    // Show app
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     document.getElementById('sidebar-email').textContent = email;
     document.getElementById('sidebar-avatar').textContent = email.charAt(0).toUpperCase();
-
-    loadDashboard();
-    loadTemplates();
-    loadTokenCount();
-    loadHistory();
-  } catch (e) {
-    errEl.textContent = 'Login failed: ' + e.message;
-    errEl.style.display = 'block';
-  }
+    loadDashboard(); loadTemplates(); loadTokenCount(); loadHistory();
+  } catch (e) { errEl.textContent = 'Login failed: ' + e.message; errEl.style.display = 'block'; }
 }
 
-function handleLogout() {
-  SUPABASE_URL = '';
-  SERVICE_KEY = '';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-}
+function handleLogout() { SUPABASE_URL = ''; SERVICE_KEY = ''; document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none'; }
 
-function showPage(name) {
+function showPage(name, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  event.currentTarget.classList.add('active');
-
+  if (el) el.classList.add('active');
   if (name === 'users') loadUsers();
+  if (name === 'notifications') loadUsers();
   if (name === 'activities') loadAllActivities();
   if (name === 'history') loadHistory();
+  if (name === 'schedule') loadScheduled();
+  if (name === 'analytics') loadAnalytics();
+  if (name === 'leaderboard') loadLeaderboard('Running');
 }
 
 async function loadDashboard() {
   try {
     const [profiles, activities, tokens] = await Promise.all([
       supabaseFetch('profiles?select=id'),
-      supabaseFetch('activities?select=id,distance,type,name,date,user_id&order=created_at.desc&limit=20'),
+      supabaseFetch('activities?select=id,distance,type,name,date,duration,user_id&order=created_at.desc&limit=100'),
       supabaseFetch('push_tokens?select=token'),
     ]);
-
     document.getElementById('stat-users').textContent = profiles.length;
     document.getElementById('stat-activities').textContent = activities.length;
     document.getElementById('stat-tokens').textContent = tokens.length;
-
-    const totalDist = activities.reduce((sum, a) => sum + parseFloat(a.distance || 0), 0).toFixed(1);
+    const totalDist = activities.reduce((s, a) => s + parseFloat(a.distance || 0), 0).toFixed(1);
     document.getElementById('stat-distance').textContent = totalDist;
-
-    // Recent activities table
-    const tbody = document.getElementById('recent-activities-table');
-    if (activities.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">🏃</div>No activities yet</div></td></tr>';
-      return;
-    }
-
-    // Get profiles for user names
+    document.getElementById('stat-runs').textContent = activities.filter(a => a.type === 'Running').length;
+    document.getElementById('stat-cycles').textContent = activities.filter(a => a.type === 'Cycling').length;
+    document.getElementById('stat-walks').textContent = activities.filter(a => a.type === 'Walking').length;
+    document.getElementById('stat-calories').textContent = activities.reduce((s, a) => s + Math.floor(parseFloat(a.distance || 0) * 60), 0).toLocaleString();
     const userIds = [...new Set(activities.map(a => a.user_id))];
-    const profileData = await supabaseFetch(`profiles?id=in.(${userIds.join(',')})&select=id,name`);
-
-    tbody.innerHTML = activities.slice(0, 10).map(a => {
-      const profile = profileData.find(p => p.id === a.user_id);
-      const typeColor = a.type === 'Running' ? '#FF6B35' : a.type === 'Cycling' ? '#4CAF50' : '#2196F3';
-      return `<tr>
-        <td>${profile?.name || 'Athlete'}</td>
-        <td><span style="color:${typeColor};font-weight:600;">${a.type}</span></td>
-        <td>${a.name || a.type}</td>
-        <td style="color:#FF6B35;font-weight:700;">${a.distance} km</td>
-        <td>${a.duration || '—'}</td>
-        <td style="color:var(--text2);">${a.date || '—'}</td>
-      </tr>`;
+    const profileData = userIds.length > 0 ? await supabaseFetch(`profiles?id=in.(${userIds.join(',')})&select=id,name`) : [];
+    document.getElementById('recent-activities-table').innerHTML = activities.slice(0, 15).map(a => {
+      const p = profileData.find(x => x.id === a.user_id);
+      const tagClass = a.type === 'Running' ? 'tag-run' : a.type === 'Cycling' ? 'tag-cyc' : 'tag-walk';
+      return `<tr><td><strong>${p?.name || 'Athlete'}</strong></td><td><span class="tag ${tagClass}">${a.type}</span></td><td>${a.name || a.type}</td><td style="color:var(--orange);font-weight:700;">${a.distance} km</td><td>${a.duration || '—'}</td><td>${Math.floor(parseFloat(a.distance || 0) * 60)} kcal</td><td style="color:var(--text2);">${a.date || '—'}</td></tr>`;
     }).join('');
-  } catch (e) {
-    showToast('Error loading dashboard: ' + e.message, 'error');
-  }
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
 }
 
 async function loadTokenCount() {
-  try {
-    const tokens = await supabaseFetch('push_tokens?select=token');
-    document.getElementById('token-count').textContent = tokens.length;
-  } catch (e) {
-    document.getElementById('token-count').textContent = '0';
-  }
+  try { const t = await supabaseFetch('push_tokens?select=token'); document.getElementById('token-count').textContent = t.length; }
+  catch (e) { document.getElementById('token-count').textContent = '0'; }
 }
 
 async function loadUsers() {
   const grid = document.getElementById('users-grid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Loading users...</div>';
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
   try {
     const [profiles, tokens, activities] = await Promise.all([
       supabaseFetch('profiles?select=*&order=updated_at.desc'),
       supabaseFetch('push_tokens?select=user_id,token'),
-      supabaseFetch('activities?select=user_id,distance'),
+      supabaseFetch('activities?select=user_id,distance,type'),
     ]);
-
-    if (profiles.length === 0) {
-      grid.innerHTML = '<div class="empty"><div class="empty-icon">👥</div>No users yet</div>';
-      return;
-    }
-
-    grid.innerHTML = profiles.map(p => {
+    allProfiles = profiles;
+    allUsers = profiles.map(p => {
       const userToken = tokens.find(t => t.user_id === p.id);
-      const userActivities = activities.filter(a => a.user_id === p.id);
-      const totalDist = userActivities.reduce((sum, a) => sum + parseFloat(a.distance || 0), 0).toFixed(2);
-
-      return `<div class="user-row">
-        <div class="user-avatar">${(p.name || 'A').charAt(0).toUpperCase()}</div>
-        <div class="user-info">
-          <div class="user-name">${p.name || 'Athlete'}</div>
-          ${userToken
-            ? `<div class="user-token">✅ Push notifications enabled</div>`
-            : `<div class="user-no-token">❌ No push token — notifications disabled</div>`
-          }
-        </div>
-        <div class="user-stats">
-          <div class="user-stat">
-            <div class="user-stat-value">${userActivities.length}</div>
-            <div class="user-stat-label">Activities</div>
-          </div>
-          <div class="user-stat">
-            <div class="user-stat-value">${totalDist}</div>
-            <div class="user-stat-label">km</div>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-  } catch (e) {
-    grid.innerHTML = `<div class="empty">Error: ${e.message}</div>`;
-  }
+      const ua = activities.filter(a => a.user_id === p.id);
+      const totalDist = ua.reduce((s, a) => s + parseFloat(a.distance || 0), 0).toFixed(2);
+      const bmi = p.weight && p.height ? (parseFloat(p.weight) / Math.pow(parseFloat(p.height) / 100, 2)).toFixed(1) : null;
+      return { ...p, hasToken: !!userToken, totalDist, actCount: ua.length, runs: ua.filter(a => a.type === 'Running').length, rides: ua.filter(a => a.type === 'Cycling').length, walks: ua.filter(a => a.type === 'Walking').length, bmi };
+    });
+    // Populate notif-target dropdown with individual users
+    const targetSelect = document.getElementById('notif-target');
+    targetSelect.innerHTML = '<option value="all">All Users</option>' + allUsers.map(u => `<option value="${u.id}">${u.name || 'Athlete'}</option>`).join('');
+    renderUsers(allUsers);
+  } catch (e) { grid.innerHTML = `<div class="empty">Error: ${e.message}</div>`; }
 }
+
+function renderUsers(users) {
+  const grid = document.getElementById('users-grid');
+  if (users.length === 0) { grid.innerHTML = '<div class="empty"><div class="empty-icon">👥</div>No users found</div>'; return; }
+  grid.innerHTML = users.map(p => {
+    const avatarHtml = p.avatar_url
+      ? `<img src="${p.avatar_url}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--orange);flex-shrink:0;" onerror="this.outerHTML='<div class=user-avatar>${(p.name||'A').charAt(0).toUpperCase()}</div>'" />`
+      : `<div class="user-avatar">${(p.name||'A').charAt(0).toUpperCase()}</div>`;
+    return `<div class="user-row">
+      ${avatarHtml}
+      <div class="user-info">
+        <div class="user-name">${p.name || 'Athlete'}</div>
+        <div style="color:var(--text3);font-size:11px;">${p.bio || 'No bio'}</div>
+        ${p.hasToken ? `<div class="user-token">✅ Push enabled</div>` : `<div class="user-no-token">❌ No push token</div>`}
+      </div>
+      <div class="user-stats">
+        <div class="user-stat"><div class="user-stat-value">${p.actCount}</div><div class="user-stat-label">Activities</div></div>
+        <div class="user-stat"><div class="user-stat-value">${p.totalDist}</div><div class="user-stat-label">km</div></div>
+        ${p.bmi ? `<div class="user-stat"><div class="user-stat-value" style="font-size:13px;">${p.bmi}</div><div class="user-stat-label">BMI</div></div>` : ''}
+      </div>
+      <button onclick="openUserModal('${p.id}')" style="padding:6px 14px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">View</button>
+    </div>`;
+  }).join('');
+}
+
+function filterUsers() {
+  const q = document.getElementById('user-search').value.toLowerCase();
+  renderUsers(allUsers.filter(u => (u.name||'').toLowerCase().includes(q) || (u.bio||'').toLowerCase().includes(q)));
+}
+
+function openUserModal(userId) {
+  const p = allUsers.find(u => u.id === userId);
+  if (!p) return;
+  const avatarHtml = p.avatar_url
+    ? `<img src="${p.avatar_url}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid var(--orange);" />`
+    : `<div style="width:64px;height:64px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;">${(p.name||'A').charAt(0).toUpperCase()}</div>`;
+  document.getElementById('user-modal-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+      ${avatarHtml}
+      <div>
+        <div style="font-size:18px;font-weight:700;">${p.name||'Athlete'}</div>
+        <div style="color:var(--text2);font-size:13px;margin-top:4px;">${p.bio||'No bio yet'}</div>
+        <div style="margin-top:6px;">${p.hasToken ? '<span style="color:var(--green);font-size:12px;">✅ Push notifications enabled</span>' : '<span style="color:var(--text3);font-size:12px;">❌ No push token</span>'}</div>
+      </div>
+    </div>
+    <div class="profile-stats-grid">
+      <div class="profile-stat"><div class="profile-stat-value">${p.actCount}</div><div class="profile-stat-label">Activities</div></div>
+      <div class="profile-stat"><div class="profile-stat-value">${p.totalDist}</div><div class="profile-stat-label">Total km</div></div>
+      <div class="profile-stat"><div class="profile-stat-value">${p.bmi||'—'}</div><div class="profile-stat-label">BMI</div></div>
+      <div class="profile-stat"><div class="profile-stat-value" style="color:#FF6B35;">${p.runs}</div><div class="profile-stat-label">Runs</div></div>
+      <div class="profile-stat"><div class="profile-stat-value" style="color:#4CAF50;">${p.rides}</div><div class="profile-stat-label">Rides</div></div>
+      <div class="profile-stat"><div class="profile-stat-value" style="color:#2196F3;">${p.walks}</div><div class="profile-stat-label">Walks</div></div>
+    </div>
+    <div class="profile-info-row"><span class="profile-info-label">Age</span><span class="profile-info-value">${p.age||'—'} yrs</span></div>
+    <div class="profile-info-row"><span class="profile-info-label">Weight</span><span class="profile-info-value">${p.weight||'—'} kg</span></div>
+    <div class="profile-info-row"><span class="profile-info-label">Height</span><span class="profile-info-value">${p.height||'—'} cm</span></div>
+    <div class="profile-info-row"><span class="profile-info-label">Weekly Goal</span><span class="profile-info-value">${p.weekly_goal||'—'} km</span></div>
+    <div class="profile-info-row"><span class="profile-info-label">User ID</span><span class="profile-info-value" style="font-size:11px;color:var(--text3);">${p.id}</span></div>`;
+  document.getElementById('user-modal').classList.add('show');
+}
+
+function closeUserModal() { document.getElementById('user-modal').classList.remove('show'); }
 
 async function loadAllActivities() {
   const tbody = document.getElementById('all-activities-table');
-  tbody.innerHTML = '<tr><td colspan="7"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="8"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>';
   try {
-    const activities = await supabaseFetch('activities?select=*&order=created_at.desc&limit=100');
+    const activities = await supabaseFetch('activities?select=*&order=created_at.desc&limit=300');
+    allActivities = activities;
     const userIds = [...new Set(activities.map(a => a.user_id))];
-    const profiles = userIds.length > 0
-      ? await supabaseFetch(`profiles?id=in.(${userIds.join(',')})&select=id,name`)
-      : [];
+    const profiles = userIds.length > 0 ? await supabaseFetch(`profiles?id=in.(${userIds.join(',')})&select=id,name`) : [];
+    renderActivities(activities, profiles);
+  } catch (e) { tbody.innerHTML = `<tr><td colspan="8"><div class="empty">Error: ${e.message}</div></td></tr>`; }
+}
 
-    if (activities.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-icon">🏃</div>No activities yet</div></td></tr>';
-      return;
-    }
+function renderActivities(activities, profiles) {
+  const tbody = document.getElementById('all-activities-table');
+  if (activities.length === 0) { tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">🏃</div>No activities</div></td></tr>'; return; }
+  tbody.innerHTML = activities.map(a => {
+    const p = profiles ? profiles.find(x => x.id === a.user_id) : allProfiles.find(x => x.id === a.user_id);
+    const tagClass = a.type === 'Running' ? 'tag-run' : a.type === 'Cycling' ? 'tag-cyc' : 'tag-walk';
+    const typeColor = a.type === 'Running' ? '#FF6B35' : a.type === 'Cycling' ? '#4CAF50' : '#2196F3';
+    const cal = Math.floor(parseFloat(a.distance || 0) * 60);
+    const pace = calcPace(a.duration, a.distance);
+    return `<tr><td><strong>${p?.name||'Athlete'}</strong></td><td><span class="tag ${tagClass}">${a.type}</span></td><td>${a.name||a.type}</td><td style="color:${typeColor};font-weight:700;">${a.distance} km</td><td>${a.duration||'—'}</td><td>${pace}</td><td>${cal} kcal</td><td style="color:var(--text2);">${a.date||'—'}</td></tr>`;
+  }).join('');
+}
 
-    tbody.innerHTML = activities.map(a => {
-      const profile = profiles.find(p => p.id === a.user_id);
-      const typeColor = a.type === 'Running' ? '#FF6B35' : a.type === 'Cycling' ? '#4CAF50' : '#2196F3';
-      const calories = Math.floor(parseFloat(a.distance || 0) * 60);
-      return `<tr>
-        <td>${profile?.name || 'Athlete'}</td>
-        <td><span style="color:${typeColor};font-weight:600;">${a.type}</span></td>
-        <td>${a.name || a.type}</td>
-        <td style="color:#FF6B35;font-weight:700;">${a.distance} km</td>
-        <td>${a.duration || '—'}</td>
-        <td>${calories} kcal</td>
-        <td style="color:var(--text2);">${a.date || '—'}</td>
-      </tr>`;
+function filterActivities() {
+  const f = document.getElementById('activity-filter').value;
+  renderActivities(f === 'All' ? allActivities : allActivities.filter(a => a.type === f), null);
+}
+
+function calcPace(duration, distance) {
+  if (!duration || !distance || parseFloat(distance) === 0) return '—';
+  const parts = duration.split(':');
+  let secs = parts.length === 3 ? parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]) : parseInt(parts[0])*60+parseInt(parts[1]);
+  const pace = secs / parseFloat(distance);
+  return `${Math.floor(pace/60)}:${String(Math.floor(pace%60)).padStart(2,'0')} /km`;
+}
+
+async function loadAnalytics() {
+  try {
+    const [profiles, activities] = await Promise.all([supabaseFetch('profiles?select=*'), supabaseFetch('activities?select=*')]);
+    const runs = activities.filter(a => a.type === 'Running').length;
+    const cycles = activities.filter(a => a.type === 'Cycling').length;
+    const walks = activities.filter(a => a.type === 'Walking').length;
+    const total = activities.length || 1;
+    // Donut
+    const canvas = document.getElementById('donut-chart');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,120,120);
+    const data = [{val:runs,color:'#FF6B35',label:'Running'},{val:cycles,color:'#4CAF50',label:'Cycling'},{val:walks,color:'#2196F3',label:'Walking'}];
+    let start = -Math.PI/2;
+    data.forEach(d => {
+      const slice = (d.val/total)*2*Math.PI;
+      ctx.beginPath(); ctx.moveTo(60,60); ctx.arc(60,60,55,start,start+slice);
+      ctx.fillStyle = d.color; ctx.fill(); start += slice;
+    });
+    ctx.beginPath(); ctx.arc(60,60,30,0,2*Math.PI); ctx.fillStyle='#161616'; ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 14px Inter'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(total, 60, 60);
+    document.getElementById('donut-legend').innerHTML = data.map(d => `<div class="legend-item"><div class="legend-dot" style="background:${d.color};"></div><span>${d.label}: <strong>${d.val}</strong> (${Math.round(d.val/total*100)}%)</span></div>`).join('');
+    // Top 5 users
+    const userDists = {};
+    activities.forEach(a => { userDists[a.user_id]=(userDists[a.user_id]||0)+parseFloat(a.distance||0); });
+    const top5 = Object.entries(userDists).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const maxD = top5[0] ? top5[0][1] : 1;
+    const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+    document.getElementById('top-users-chart').innerHTML = top5.map(([uid,dist],i) => {
+      const p = profiles.find(x=>x.id===uid);
+      const pct = Math.round(dist/maxD*100);
+      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><span style="font-size:18px;width:24px;">${medals[i]}</span><span style="width:90px;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p?.name||'Athlete'}</span><div style="flex:1;height:8px;background:var(--border2);border-radius:4px;"><div style="width:${pct}%;height:8px;background:var(--orange);border-radius:4px;"></div></div><span style="font-size:12px;color:var(--orange);font-weight:700;width:55px;text-align:right;">${dist.toFixed(1)} km</span></div>`;
     }).join('');
-  } catch (e) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty">Error: ${e.message}</div></td></tr>`;
-  }
+    // Distance bars
+    const runD = activities.filter(a=>a.type==='Running').reduce((s,a)=>s+parseFloat(a.distance||0),0).toFixed(1);
+    const cycD = activities.filter(a=>a.type==='Cycling').reduce((s,a)=>s+parseFloat(a.distance||0),0).toFixed(1);
+    const walkD = activities.filter(a=>a.type==='Walking').reduce((s,a)=>s+parseFloat(a.distance||0),0).toFixed(1);
+    const mxD = Math.max(parseFloat(runD),parseFloat(cycD),parseFloat(walkD),1);
+    document.getElementById('distance-bars').innerHTML = [
+      {label:'Running',dist:runD,color:'#FF6B35'},{label:'Cycling',dist:cycD,color:'#4CAF50'},{label:'Walking',dist:walkD,color:'#2196F3'}
+    ].map(b=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><span style="font-size:11px;color:var(--text2);font-weight:600;">${b.dist}</span><div style="width:100%;height:${Math.round(parseFloat(b.dist)/mxD*100)}%;background:${b.color};border-radius:4px;min-height:4px;"></div><span style="font-size:10px;color:var(--text3);">${b.label}</span></div>`).join('');
+    // Summary
+    const totalDist = activities.reduce((s,a)=>s+parseFloat(a.distance||0),0).toFixed(1);
+    const totalCal = activities.reduce((s,a)=>s+Math.floor(parseFloat(a.distance||0)*60),0);
+    const avgDist = activities.length>0 ? (parseFloat(totalDist)/activities.length).toFixed(2) : 0;
+    const most = runs>=cycles&&runs>=walks?'Running 🏃':cycles>=walks?'Cycling 🚴':'Walking 🚶';
+    document.getElementById('app-summary').innerHTML = [
+      {label:'Total Users',value:profiles.length,color:'var(--orange)'},
+      {label:'Total Activities',value:activities.length,color:'var(--green)'},
+      {label:'Total Distance',value:totalDist+' km',color:'var(--blue)'},
+      {label:'Total Calories',value:totalCal.toLocaleString()+' kcal',color:'var(--red)'},
+      {label:'Avg Distance/Activity',value:avgDist+' km',color:'var(--orange)'},
+      {label:'Most Popular',value:most,color:'var(--yellow)'},
+      {label:'Users with Push',value:document.getElementById('token-count').textContent+' devices',color:'var(--green)'},
+    ].map(s=>`<div class="profile-info-row"><span class="profile-info-label">${s.label}</span><span class="profile-info-value" style="color:${s.color};">${s.value}</span></div>`).join('');
+  } catch(e) { showToast('Analytics error: '+e.message,'error'); }
+}
+
+async function loadLeaderboard(type) {
+  ['run','cyc','walk'].forEach(t => {
+    const b = document.getElementById('lb-'+t);
+    b.style.background='var(--card)'; b.style.borderColor='var(--border2)'; b.style.color='var(--text2)';
+  });
+  const tmap = {Running:'run',Cycling:'cyc',Walking:'walk'};
+  const colors = {Running:'#FF6B35',Cycling:'#4CAF50',Walking:'#2196F3'};
+  const btn = document.getElementById('lb-'+tmap[type]);
+  const rgb = {Running:'255,107,53',Cycling:'76,175,80',Walking:'33,150,243'};
+  btn.style.background=`rgba(${rgb[type]},0.15)`; btn.style.borderColor=colors[type]; btn.style.color=colors[type];
+  const el = document.getElementById('leaderboard-content');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
+  try {
+    const [activities, profiles] = await Promise.all([
+      supabaseFetch(`activities?type=eq.${type}&select=user_id,distance`),
+      supabaseFetch('profiles?select=id,name,avatar_url,bio,weight,height'),
+    ]);
+    const userDists = {};
+    activities.forEach(a => { userDists[a.user_id]=(userDists[a.user_id]||0)+parseFloat(a.distance||0); });
+    const sorted = Object.entries(userDists).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const medals = ['🥇','🥈','🥉'];
+    el.innerHTML = `<div class="table-card"><table><thead><tr><th>Rank</th><th>User</th><th>Bio</th><th>BMI</th><th>Distance</th></tr></thead><tbody>${
+      sorted.map(([uid,dist],i) => {
+        const p = profiles.find(x=>x.id===uid);
+        const bmi = p?.weight&&p?.height ? (parseFloat(p.weight)/Math.pow(parseFloat(p.height)/100,2)).toFixed(1) : '—';
+        const av = p?.avatar_url ? `<img src="${p.avatar_url}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;" />` : `<span style="display:inline-flex;width:32px;height:32px;border-radius:50%;background:${colors[type]};align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px;margin-right:8px;vertical-align:middle;">${(p?.name||'A').charAt(0).toUpperCase()}</span>`;
+        return `<tr><td style="font-size:20px;">${medals[i]||'#'+(i+1)}</td><td>${av}<strong>${p?.name||'Athlete'}</strong></td><td style="color:var(--text2);">${p?.bio||'—'}</td><td>${bmi}</td><td style="color:${colors[type]};font-weight:700;font-size:16px;">${dist.toFixed(2)} km</td></tr>`;
+      }).join('')
+    }</tbody></table></div>`;
+  } catch(e) { el.innerHTML=`<div class="empty">Error: ${e.message}</div>`; }
 }
 
 function loadTemplates() {
-  const grid = document.getElementById('templates-grid');
-  grid.innerHTML = templates.map((t, i) => `
-    <div onclick="useTemplate(${i})" style="
-      background:var(--card2); border:1px solid var(--border2);
-      border-radius:12px; padding:14px; cursor:pointer;
-      transition:border-color 0.2s;
-    " onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border2)'">
+  document.getElementById('templates-grid').innerHTML = templates.map((t,i) => `
+    <div onclick="useTemplate(${i})" style="background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:14px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border2)'">
       <div style="font-size:20px;margin-bottom:8px;">${t.icon}</div>
       <div style="font-weight:600;font-size:13px;margin-bottom:4px;">${t.title}</div>
       <div style="color:var(--text3);font-size:12px;line-height:1.4;">${t.body}</div>
       <div style="color:var(--orange);font-size:11px;margin-top:6px;">→ ${t.screen}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
+}
+
+function toggleNotifUrl() {
+  const v = document.getElementById('notif-screen').value;
+  document.getElementById('notif-url').style.display = v === 'url' ? 'block' : 'none';
+}
+
+function toggleSchedUrl() {
+  const v = document.getElementById('sched-screen').value;
+  document.getElementById('sched-url').style.display = v === 'url' ? 'block' : 'none';
+}
+
+async function updateRecipientCount() {
+  const target = document.getElementById('notif-target').value;
+  if (target === 'all') {
+    loadTokenCount();
+  } else {
+    // Single user — count their token
+    try {
+      const tokens = await supabaseFetch(`push_tokens?user_id=eq.${target}&select=token`);
+      document.getElementById('token-count').textContent = tokens.length;
+    } catch(e) { document.getElementById('token-count').textContent = '0'; }
+  }
 }
 
 function useTemplate(i) {
@@ -833,145 +715,162 @@ function useTemplate(i) {
   document.getElementById('notif-title').value = t.title;
   document.getElementById('notif-body').value = t.body;
   document.getElementById('notif-screen').value = t.screen;
+  toggleNotifUrl();
   updatePreview();
 }
 
 function updatePreview() {
-  const title = document.getElementById('notif-title').value || 'Your notification title';
-  const body = document.getElementById('notif-body').value || 'Your notification message will appear here...';
-  const screen = document.getElementById('notif-screen').value || 'Home';
-  document.getElementById('preview-title').textContent = title;
-  document.getElementById('preview-body').textContent = body;
-  document.getElementById('preview-screen').textContent = screen;
+  const screen = document.getElementById('notif-screen').value;
+  const url = document.getElementById('notif-url')?.value;
+  document.getElementById('preview-title').textContent = document.getElementById('notif-title').value || 'Your notification title';
+  document.getElementById('preview-body').textContent = document.getElementById('notif-body').value || 'Your message...';
+  document.getElementById('preview-screen').textContent = screen === 'url' ? (url || 'External URL') : screen || 'Home';
 }
 
 async function sendNotification() {
   const title = document.getElementById('notif-title').value.trim();
   const body = document.getElementById('notif-body').value.trim();
-  const screen = document.getElementById('notif-screen').value;
-
-  if (!title || !body) {
-    showToast('Please enter title and message', 'error');
-    return;
-  }
-
+  const screenVal = document.getElementById('notif-screen').value;
+  const urlVal = document.getElementById('notif-url')?.value?.trim();
+  const screen = screenVal === 'url' ? urlVal : screenVal;
+  const target = document.getElementById('notif-target').value;
+  if (!title || !body) { showToast('Please enter title and message', 'error'); return; }
+  if (screenVal === 'url' && !urlVal) { showToast('Please enter a URL', 'error'); return; }
   const btn = document.getElementById('send-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Sending...';
-
+  btn.disabled = true; btn.textContent = '⏳ Sending...';
   try {
-    // Get all push tokens
-    const tokens = await supabaseFetch('push_tokens?select=token,user_id');
-
-    if (tokens.length === 0) {
-      showToast('No devices registered yet. Users need to open the app first.', 'error');
-      btn.disabled = false;
-      btn.innerHTML = '🚀 Send Now';
-      return;
+    let tokens;
+    if (target === 'all') {
+      tokens = await supabaseFetch('push_tokens?select=token,user_id');
+    } else {
+      tokens = await supabaseFetch(`push_tokens?user_id=eq.${target}&select=token,user_id`);
     }
-
-    // Filter only real Expo push tokens
     const validTokens = tokens.filter(t => t.token && t.token.startsWith('ExponentPushToken'));
-
-    if (validTokens.length === 0) {
-      showToast('No valid Expo tokens found. Users need to update the app first.', 'error');
-      btn.disabled = false;
-      btn.innerHTML = '🚀 Send Now';
-      return;
-    }
-
-    // Send to Expo Push API
-    const messages = validTokens.map(t => ({
-      to: t.token,
-      title,
-      body,
-      data: { screen },
-      sound: 'default',
-      priority: 'high',
-    }));
-
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-push-notification`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SERVICE_KEY}`,
-      },
-      body: JSON.stringify({ messages, title, body, screen }),
-    });
-
-    const result = await res.json();
-    console.log('Push result:', result);
-
-    // Save to history
-    const historyItem = {
-      id: Date.now(),
-      title,
-      body,
-      screen,
-      recipients: validTokens.length,
-      status: 'sent',
-      sentAt: new Date().toLocaleString(),
-    };
-    notifHistory.unshift(historyItem);
+    if (validTokens.length === 0) { showToast('No valid Expo tokens found for this recipient.', 'error'); btn.disabled=false; btn.innerHTML='🚀 Send Now'; return; }
+    const messages = validTokens.map(t => ({ to: t.token, title, body, data: { screen, isUrl: screenVal === 'url' }, sound: 'default', priority: 'high' }));
+    await fetch(`${SUPABASE_URL}/functions/v1/send-push-notification`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` }, body: JSON.stringify({ messages, title, body, screen }) });
+    const recipientLabel = target === 'all' ? `${validTokens.length} device${validTokens.length!==1?'s':''}` : allUsers.find(u=>u.id===target)?.name || '1 user';
+    notifHistory.unshift({ id: Date.now(), title, body, screen, recipients: validTokens.length, status: 'sent', sentAt: new Date().toLocaleString() });
     localStorage.setItem('cf_notif_history', JSON.stringify(notifHistory));
     loadHistory();
-
-    showToast(`✅ Sent to ${tokens.length} device${tokens.length !== 1 ? 's' : ''}!`, 'success');
-
-    // Clear form
+    showToast(`✅ Sent to ${recipientLabel}!`, 'success');
     document.getElementById('notif-title').value = '';
     document.getElementById('notif-body').value = '';
     updatePreview();
+  } catch (e) { showToast('Error: '+e.message, 'error'); }
+  btn.disabled = false; btn.innerHTML = '🚀 Send Now';
+}
 
-  } catch (e) {
-    showToast('Error: ' + e.message, 'error');
-    console.error(e);
-  }
+async function scheduleNotification() {
+  const title = document.getElementById('sched-title').value.trim();
+  const body = document.getElementById('sched-body').value.trim();
+  const datetime = document.getElementById('sched-datetime').value;
+  if (!title || !body || !datetime) { showToast('Please fill all fields', 'error'); return; }
+  const schedScreenVal = document.getElementById('sched-screen').value;
+  const schedUrlVal = document.getElementById('sched-url')?.value?.trim();
+  const screen = schedScreenVal === 'url' ? schedUrlVal : schedScreenVal;
+  if (schedScreenVal === 'url' && !schedUrlVal) { showToast('Please enter a URL', 'error'); return; }
+  const scheduledAt = new Date(datetime);
+  if (scheduledAt <= new Date()) { showToast('Please select a future time', 'error'); return; }
+  try {
+    await supabaseFetch('scheduled_notifications', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ title, body, screen, scheduled_at: scheduledAt.toISOString(), status: 'pending' }),
+    });
+    showToast(`✅ Scheduled for ${scheduledAt.toLocaleString()}`, 'success');
+    loadScheduled();
+    document.getElementById('sched-title').value = '';
+    document.getElementById('sched-body').value = '';
+    document.getElementById('sched-datetime').value = '';
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
 
-  btn.disabled = false;
-  btn.innerHTML = '🚀 Send Now';
+async function loadScheduled() {
+  const tbody = document.getElementById('scheduled-table');
+  try {
+    const scheduled = await supabaseFetch('scheduled_notifications?select=*&order=scheduled_at.desc&limit=50');
+    if (!scheduled.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">🗓️</div>No scheduled notifications</div></td></tr>'; return; }
+    tbody.innerHTML = scheduled.map(s => `<tr>
+      <td style="font-weight:600;">${s.title}</td>
+      <td style="color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.body}</td>
+      <td style="color:var(--orange);">${s.screen}</td>
+      <td style="color:var(--text2);">${new Date(s.scheduled_at).toLocaleString()}</td>
+      <td><span class="status-badge ${s.status==='sent'?'status-sent':'status-pending'}">${s.status}</span></td>
+      <td><button onclick="cancelScheduled('${s.id}')" style="padding:4px 10px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);border-radius:6px;color:var(--red);font-size:11px;cursor:pointer;font-family:var(--font);">Cancel</button></td>
+    </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty">Error: ${e.message}</div></td></tr>`; }
+}
+
+async function cancelScheduled(id) {
+  try {
+    await supabaseFetch(`scheduled_notifications?id=eq.${id}`, { method: 'DELETE' });
+    loadScheduled(); showToast('Cancelled', 'success');
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+async function clearAllScheduled() {
+  if (!confirm('Clear all scheduled notifications?')) return;
+  try {
+    await supabaseFetch('scheduled_notifications?status=eq.pending', { method: 'DELETE' });
+    loadScheduled(); showToast('All pending cleared', 'success');
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
 }
 
 function loadHistory() {
   const tbody = document.getElementById('history-table');
-  if (notifHistory.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div>No notifications sent yet</div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = notifHistory.map(n => `<tr>
-    <td style="font-weight:600;">${n.title}</td>
-    <td style="color:var(--text2);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${n.body}</td>
-    <td><span style="color:var(--orange);font-weight:600;">${n.screen}</span></td>
-    <td>${n.recipients} devices</td>
-    <td><span class="status-badge status-${n.status}">${n.status}</span></td>
-    <td style="color:var(--text2);">${n.sentAt}</td>
-  </tr>`).join('');
+  if (!notifHistory.length) { tbody.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div>No notifications sent yet</div></td></tr>'; return; }
+  tbody.innerHTML = notifHistory.map(n=>`<tr><td style="font-weight:600;">${n.title}</td><td style="color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${n.body}</td><td style="color:var(--orange);">${n.screen}</td><td>${n.recipients} devices</td><td><span class="status-badge status-${n.status}">${n.status}</span></td><td style="color:var(--text2);">${n.sentAt}</td></tr>`).join('');
 }
 
 function clearHistory() {
   if (!confirm('Clear all notification history?')) return;
-  notifHistory = [];
-  localStorage.removeItem('cf_notif_history');
-  loadHistory();
-  showToast('History cleared', 'success');
+  notifHistory=[]; localStorage.removeItem('cf_notif_history'); loadHistory(); showToast('Cleared','success');
 }
 
-function showToast(msg, type = 'success') {
-  const toast = document.getElementById('toast');
-  const icon = document.getElementById('toast-icon');
-  const msgEl = document.getElementById('toast-msg');
-  icon.textContent = type === 'success' ? '✅' : '❌';
-  msgEl.textContent = msg;
-  toast.className = `toast ${type} show`;
-  setTimeout(() => { toast.className = `toast ${type}`; }, 3500);
+function downloadCSV(csv, filename) {
+  const blob = new Blob([csv],{type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=filename; a.click();
 }
 
-// Enter key on login
+async function downloadUserReport() {
+  try {
+    let csv = 'Name,Bio,Age,Weight(kg),Height(cm),BMI,Weekly Goal(km),Activities,Total KM,Runs,Rides,Walks,Push Token\n';
+    allUsers.forEach(p => {
+      csv += `"${p.name||''}","${p.bio||''}","${p.age||''}","${p.weight||''}","${p.height||''}","${p.bmi||''}","${p.weekly_goal||''}","${p.actCount}","${p.totalDist}","${p.runs}","${p.rides}","${p.walks}","${p.hasToken?'Yes':'No'}"\n`;
+    });
+    downloadCSV(csv, `cf-users-${new Date().toISOString().split('T')[0]}.csv`);
+    showToast('User report downloaded!','success');
+  } catch(e) { showToast('Error: '+e.message,'error'); }
+}
+
+async function downloadActivityReport() {
+  try {
+    let csv = 'User ID,Type,Name,Distance(km),Duration,Pace,Calories,Date\n';
+    allActivities.forEach(a => {
+      const p = allProfiles.find(x=>x.id===a.user_id);
+      csv += `"${p?.name||a.user_id}","${a.type}","${a.name||''}","${a.distance}","${a.duration||''}","${calcPace(a.duration,a.distance)}","${Math.floor(parseFloat(a.distance||0)*60)}","${a.date||''}"\n`;
+    });
+    downloadCSV(csv, `cf-activities-${new Date().toISOString().split('T')[0]}.csv`);
+    showToast('Activity report downloaded!','success');
+  } catch(e) { showToast('Error: '+e.message,'error'); }
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = type==='success'?'✅':'❌';
+  document.getElementById('toast-msg').textContent = msg;
+  t.className=`toast ${type} show`;
+  setTimeout(()=>{ t.className=`toast ${type}`; }, 3500);
+}
+
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
-    handleLogin();
-  }
+  if (e.key==='Enter' && document.getElementById('login-screen').style.display!=='none') handleLogin();
+  if (e.key==='Escape') closeUserModal();
 });
+document.getElementById('user-modal').addEventListener('click', e => { if (e.target===e.currentTarget) closeUserModal(); });
 </script>
 </body>
 </html>
