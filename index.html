@@ -900,7 +900,7 @@ async function loadPremiumUsers() {
   grid.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
   try {
     const [profiles, activities] = await Promise.all([
-      supabaseFetch('profiles?is_premium=eq.true&select=*&order=premium_purchased_at.desc'),
+      supabaseFetch('profiles?select=*&order=premium_purchased_at.desc&is_premium=eq.true'),
       supabaseFetch('activities?select=user_id,distance,type'),
     ]);
     const totalUsers = (await supabaseFetch('profiles?select=id')).length;
@@ -994,7 +994,7 @@ function filterChats() {
 
 async function downloadPremiumReport() {
   try {
-    const profiles = await supabaseFetch('profiles?is_premium=eq.true&select=*');
+    const profiles = await supabaseFetch('profiles?select=*&is_premium=eq.true');
     let csv = 'Name,Bio,Age,Weight,Height,BMI,Weekly Goal,Premium Since\n';
     profiles.forEach(p => {
       const bmi = p.weight && p.height ? (parseFloat(p.weight) / Math.pow(parseFloat(p.height)/100,2)).toFixed(1) : '';
