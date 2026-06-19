@@ -175,6 +175,8 @@
     <div class="nav-item" onclick="showPage('users',this)"><span class="nav-icon">👥</span><span>Users</span></div>
     <div class="nav-item" onclick="showPage('activities',this)"><span class="nav-icon">🏃</span><span>Activities</span></div>
     <div class="nav-item" onclick="showPage('leaderboard',this)"><span class="nav-icon">🏆</span><span>Leaderboard</span></div>
+    <div class="nav-item" onclick="showPage('premium',this)"><span class="nav-icon">👑</span><span>Premium</span></div>
+    <div class="nav-item" onclick="showPage('aichats',this)"><span class="nav-icon">✨</span><span>AI Chats</span></div>
     <div class="sidebar-bottom">
       <div class="sidebar-user">
         <div class="sidebar-avatar" id="sidebar-avatar">A</div>
@@ -354,6 +356,31 @@
   </div>
 </div>
 
+    <!-- PREMIUM USERS -->
+    <div class="page" id="page-premium">
+      <div class="topbar">
+        <div><div class="page-title">Premium Users</div><div class="page-sub">All Pro members</div></div>
+        <button onclick="downloadPremiumReport()" style="padding:8px 16px;background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);border-radius:8px;color:var(--green);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">⬇ Download CSV</button>
+      </div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Pro Users</div><div class="stat-card-icon" style="background:rgba(255,215,0,0.1);">👑</div></div><div class="stat-card-value" id="stat-premium-count" style="color:#FFD700;">—</div><div class="stat-card-sub">Lifetime members</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Revenue</div><div class="stat-card-icon" style="background:var(--green-dim);">💰</div></div><div class="stat-card-value" id="stat-premium-revenue" style="color:var(--green);">—</div><div class="stat-card-sub">Total earned (₹19/user)</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Conversion Rate</div><div class="stat-card-icon" style="background:var(--blue-dim);">📊</div></div><div class="stat-card-value" id="stat-premium-rate" style="color:var(--blue);">—</div><div class="stat-card-sub">Free to Pro</div></div>
+      </div>
+      <div id="premium-users-grid"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+    </div>
+
+    <!-- AI CHATS -->
+    <div class="page" id="page-aichats">
+      <div class="topbar">
+        <div><div class="page-title">AI Chat History</div><div class="page-sub">All user conversations with AI Coach</div></div>
+        <div style="display:flex;gap:10px;">
+          <input class="search-input" id="chat-search" placeholder="🔍 Search by user..." oninput="filterChats()" />
+        </div>
+      </div>
+      <div id="aichats-content"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+    </div>
+
 <!-- User Modal -->
 <div class="modal-overlay" id="user-modal">
   <div class="modal-box">
@@ -430,6 +457,8 @@ function showPage(name, el) {
   if (name === 'schedule') loadScheduled();
   if (name === 'analytics') loadAnalytics();
   if (name === 'leaderboard') loadLeaderboard('Running');
+  if (name === 'premium') loadPremiumUsers();
+  if (name === 'aichats') loadAIChats();
 }
 
 async function loadDashboard() {
@@ -864,6 +893,117 @@ function showToast(msg, type='success') {
   document.getElementById('toast-msg').textContent = msg;
   t.className=`toast ${type} show`;
   setTimeout(()=>{ t.className=`toast ${type}`; }, 3500);
+}
+
+async function loadPremiumUsers() {
+  const grid = document.getElementById('premium-users-grid');
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
+  try {
+    const [profiles, activities] = await Promise.all([
+      supabaseFetch('profiles?is_premium=eq.true&select=*&order=premium_purchased_at.desc'),
+      supabaseFetch('activities?select=user_id,distance,type'),
+    ]);
+    const totalUsers = (await supabaseFetch('profiles?select=id')).length;
+    document.getElementById('stat-premium-count').textContent = profiles.length;
+    document.getElementById('stat-premium-revenue').textContent = '₹' + (profiles.length * 19).toLocaleString();
+    document.getElementById('stat-premium-rate').textContent = totalUsers > 0 ? Math.round(profiles.length / totalUsers * 100) + '%' : '0%';
+    if (profiles.length === 0) { grid.innerHTML = '<div class="empty"><div class="empty-icon">👑</div>No premium users yet</div>'; return; }
+    grid.innerHTML = profiles.map(p => {
+      const ua = activities.filter(a => a.user_id === p.id);
+      const totalDist = ua.reduce((s, a) => s + parseFloat(a.distance || 0), 0).toFixed(2);
+      const bmi = p.weight && p.height ? (parseFloat(p.weight) / Math.pow(parseFloat(p.height) / 100, 2)).toFixed(1) : '—';
+      const avatarHtml = p.avatar_url ? `<img src="${p.avatar_url}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid #FFD700;flex-shrink:0;" />` : `<div class="user-avatar" style="border:2px solid #FFD700;background:#FFD70022;color:#FFD700;">${(p.name||'A').charAt(0).toUpperCase()}</div>`;
+      const purchasedAt = p.premium_purchased_at ? new Date(p.premium_purchased_at).toLocaleDateString() : '—';
+      return `<div class="user-row" style="border-color:#FFD70033;">
+        ${avatarHtml}
+        <div class="user-info">
+          <div style="display:flex;align-items:center;gap:6px;"><div class="user-name">${p.name||'Athlete'}</div><span style="color:#FFD700;font-size:12px;">👑 Pro</span></div>
+          <div style="color:var(--text3);font-size:11px;">${p.bio||'No bio'}</div>
+          <div style="color:#888;font-size:11px;margin-top:2px;">Joined Pro: ${purchasedAt}</div>
+        </div>
+        <div class="user-stats">
+          <div class="user-stat"><div class="user-stat-value">${ua.length}</div><div class="user-stat-label">Activities</div></div>
+          <div class="user-stat"><div class="user-stat-value">${totalDist}</div><div class="user-stat-label">km</div></div>
+          <div class="user-stat"><div class="user-stat-value" style="font-size:13px;">${bmi}</div><div class="user-stat-label">BMI</div></div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { grid.innerHTML = `<div class="empty">Error: ${e.message}</div>`; }
+}
+
+let allChats = [];
+async function loadAIChats() {
+  const el = document.getElementById('aichats-content');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
+  try {
+    const [chats, profiles] = await Promise.all([
+      supabaseFetch('chat_history?select=*&order=updated_at.desc'),
+      supabaseFetch('profiles?select=id,name,avatar_url,is_premium'),
+    ]);
+    allChats = chats.map(c => ({ ...c, profile: profiles.find(p => p.id === c.user_id) }));
+    renderChats(allChats);
+  } catch(e) { el.innerHTML = `<div class="empty">Error: ${e.message}</div>`; }
+}
+
+function renderChats(chats) {
+  const el = document.getElementById('aichats-content');
+  if (chats.length === 0) { el.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No AI chats yet</div>'; return; }
+  el.innerHTML = chats.map(c => {
+    const msgs = c.messages || [];
+    const userMsgs = msgs.filter(m => m.role === 'user').length;
+    const aiMsgs = msgs.filter(m => m.role === 'assistant').length;
+    const lastMsg = msgs[msgs.length - 1];
+    const p = c.profile;
+    const avatarHtml = p?.avatar_url ? `<img src="${p.avatar_url}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;" />` : `<div class="user-avatar">${(p?.name||'A').charAt(0).toUpperCase()}</div>`;
+    return `<div class="user-row" style="flex-direction:column;align-items:stretch;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        ${avatarHtml}
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-weight:600;font-size:14px;">${p?.name||'Athlete'}</span>
+            ${p?.is_premium ? '<span style="color:#FFD700;font-size:12px;">👑 Pro</span>' : ''}
+          </div>
+          <div style="color:var(--text3);font-size:11px;">Updated: ${new Date(c.updated_at).toLocaleString()}</div>
+        </div>
+        <div style="display:flex;gap:16px;text-align:center;">
+          <div><div style="color:var(--orange);font-weight:700;">${userMsgs}</div><div style="color:var(--text3);font-size:10px;">Messages</div></div>
+          <div><div style="color:var(--green);font-weight:700;">${aiMsgs}</div><div style="color:var(--text3);font-size:10px;">AI Replies</div></div>
+        </div>
+        <button onclick="toggleChat('${c.id}')" style="padding:6px 12px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">View</button>
+      </div>
+      <div id="chat-${c.id}" style="display:none;border-top:1px solid var(--border);padding-top:12px;max-height:300px;overflow-y:auto;">
+        ${msgs.map(m => `<div style="margin-bottom:8px;display:flex;justify-content:${m.role==='user'?'flex-end':'flex-start'};">
+          <div style="max-width:75%;padding:8px 12px;border-radius:12px;font-size:13px;background:${m.role==='user'?'var(--orange)':'var(--card2)'};color:${m.role==='user'?'#fff':'var(--text)'};border:1px solid ${m.role==='user'?'transparent':'var(--border2)'};">
+            ${m.content}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleChat(id) {
+  const el = document.getElementById('chat-' + id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function filterChats() {
+  const q = document.getElementById('chat-search').value.toLowerCase();
+  renderChats(allChats.filter(c => (c.profile?.name||'').toLowerCase().includes(q)));
+}
+
+async function downloadPremiumReport() {
+  try {
+    const profiles = await supabaseFetch('profiles?is_premium=eq.true&select=*');
+    let csv = 'Name,Bio,Age,Weight,Height,BMI,Weekly Goal,Premium Since\n';
+    profiles.forEach(p => {
+      const bmi = p.weight && p.height ? (parseFloat(p.weight) / Math.pow(parseFloat(p.height)/100,2)).toFixed(1) : '';
+      csv += `"${p.name||''}","${p.bio||''}","${p.age||''}","${p.weight||''}","${p.height||''}","${bmi}","${p.weekly_goal||''}","${p.premium_purchased_at||''}"
+`;
+    });
+    downloadCSV(csv, `cf-premium-users-${new Date().toISOString().split('T')[0]}.csv`);
+    showToast('Premium report downloaded!', 'success');
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
 }
 
 document.addEventListener('keydown', e => {
