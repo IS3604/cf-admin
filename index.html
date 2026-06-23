@@ -708,7 +708,7 @@ async function sendNow() {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/send-push-notification`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SERVICE_KEY}` },
-      body: JSON.stringify({ title, body, screen, tokens: tokens.map(t => t.token) })
+      body: JSON.stringify({ title, body, screen, messages: tokens.map(t => ({ to: t.token, title, body, data: { screen } })) })
     });
     if (res.ok) { toast(`✅ Sent to ${tokens.length} devices!`); document.getElementById('notif-title').value = ''; document.getElementById('notif-body').value = ''; }
     else toast('Send failed', 'error');
