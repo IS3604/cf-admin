@@ -1,317 +1,420 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Custom Fitness — Admin Panel</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Custom Fitness — Admin</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap');
-  :root {
-    --bg: #080808; --card: #111111; --card2: #161616; --border: #1E1E1E; --border2: #252525;
-    --orange: #FF6B35; --orange-dim: rgba(255,107,53,0.1); --green: #22C55E; --green-dim: rgba(34,197,94,0.1);
-    --red: #EF4444; --red-dim: rgba(239,68,68,0.1); --blue: #3B82F6; --blue-dim: rgba(59,130,246,0.1);
-    --yellow: #F59E0B; --purple: #8B5CF6;
-    --text: #F0F0F0; --text2: #888; --text3: #555; --font: 'Inter', sans-serif; --font-display: 'Space Grotesk', sans-serif;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.5; min-height: 100vh; }
-  #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-  .login-card { background: var(--card); border: 1px solid var(--border2); border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; }
-  .login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
-  .login-logo-icon { width: 40px; height: 40px; border-radius: 12px; background: var(--orange); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 14px; color: #fff; }
-  .login-logo span { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
-  .form-group { margin-bottom: 16px; }
-  .form-label { color: var(--text2); font-size: 12px; font-weight: 600; margin-bottom: 6px; display: block; }
-  .form-input { width: 100%; padding: 12px 14px; background: var(--card2); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font); outline: none; transition: border-color 0.2s; }
-  .form-input:focus { border-color: var(--orange); }
-  .form-textarea { width: 100%; padding: 12px 14px; background: var(--card2); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font); outline: none; resize: vertical; min-height: 80px; }
-  .form-textarea:focus { border-color: var(--orange); }
-  .form-select { width: 100%; padding: 12px 14px; background: var(--card2); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-size: 14px; font-family: var(--font); outline: none; cursor: pointer; }
-  .btn-login { width: 100%; padding: 13px; background: var(--orange); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: var(--font); }
-  .login-error { color: var(--red); font-size: 13px; margin-top: 12px; text-align: center; display: none; }
-  #app { display: none; min-height: 100vh; }
-  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 50; overflow-y: auto; }
-  .sidebar-logo { padding: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
-  .sidebar-logo-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--orange); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; color: #fff; }
-  .sidebar-label { color: var(--text3); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 20px 16px 8px; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 8px; margin: 2px 8px; cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 500; transition: all 0.15s; }
-  .nav-item:hover { background: var(--card2); color: var(--text); }
-  .nav-item.active { background: var(--orange-dim); color: var(--orange); }
-  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-  .sidebar-bottom { margin-top: auto; padding: 16px; border-top: 1px solid var(--border); }
-  .sidebar-user { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; }
-  .sidebar-user-info { flex: 1; min-width: 0; }
-  .sidebar-user-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sidebar-user-role { font-size: 11px; color: var(--orange); }
-  .btn-logout { width: 100%; padding: 8px; background: var(--card2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text2); font-size: 12px; cursor: pointer; font-family: var(--font); }
-  .btn-logout:hover { border-color: var(--red); color: var(--red); }
-  .main { margin-left: 220px; padding: 24px; min-height: 100vh; }
-  .page { display: none; }
-  .page.active { display: block; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
-  .page-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
-  .page-sub { color: var(--text2); font-size: 13px; margin-top: 2px; }
-  .badge-live { display: flex; align-items: center; gap: 6px; background: var(--green-dim); border: 1px solid rgba(34,197,94,0.3); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--green); }
-  .badge-live span { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-  .stat-card { background: var(--card); border: 1px solid var(--border2); border-radius: 14px; padding: 18px; }
-  .stat-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .stat-card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-  .stat-card-label { color: var(--text2); font-size: 12px; font-weight: 500; }
-  .stat-card-value { font-family: var(--font-display); font-size: 28px; font-weight: 800; }
-  .stat-card-sub { color: var(--text3); font-size: 11px; margin-top: 4px; }
-  .composer-card { background: var(--card); border: 1px solid var(--border2); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
-  .composer-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-  .composer-sub { color: var(--text2); font-size: 13px; margin-bottom: 20px; }
-  .composer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-  .composer-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
-  .recipient-info { display: flex; align-items: center; gap: 8px; color: var(--text2); font-size: 13px; }
-  .recipient-count { color: var(--orange); font-weight: 700; }
-  .btn-send { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--orange); border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font); }
-  .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
-  .notif-preview { background: #1C1C1E; border-radius: 14px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; margin-top: 16px; }
-  .notif-preview-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--orange); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-  .notif-preview-app { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
-  .notif-preview-title { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
-  .notif-preview-body { color: var(--text2); font-size: 13px; line-height: 1.4; }
-  .table-card { background: var(--card); border: 1px solid var(--border2); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
-  .table-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border); }
-  .table-title { font-weight: 700; font-size: 15px; }
-  table { width: 100%; border-collapse: collapse; }
-  th { text-align: left; padding: 12px 20px; color: var(--text3); font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: var(--card2); border-bottom: 1px solid var(--border); }
-  td { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,0.01); }
-  .status-badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-  .status-sent { background: var(--green-dim); color: var(--green); }
-  .status-failed { background: var(--red-dim); color: var(--red); }
-  .status-pending { background: var(--orange-dim); color: var(--orange); }
-  .user-row { background: var(--card); border: 1px solid var(--border2); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-  .user-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #fff; flex-shrink: 0; }
-  .user-info { flex: 1; }
-  .user-name { font-weight: 600; font-size: 14px; }
-  .user-token { color: var(--green); font-size: 11px; margin-top: 2px; }
-  .user-no-token { color: var(--text3); font-size: 11px; margin-top: 2px; }
-  .user-stats { display: flex; gap: 20px; }
-  .user-stat { text-align: center; }
-  .user-stat-value { font-weight: 700; font-size: 15px; color: var(--orange); }
-  .user-stat-label { color: var(--text3); font-size: 10px; }
-  .chart-container { background: var(--card); border: 1px solid var(--border2); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-  .chart-title { font-weight: 700; font-size: 15px; margin-bottom: 16px; }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .donut-row { display: flex; gap: 20px; align-items: center; }
-  .donut-legend { display: flex; flex-direction: column; gap: 10px; }
-  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; display: none; align-items: center; justify-content: center; }
-  .modal-overlay.show { display: flex; }
-  .modal-box { background: var(--card); border: 1px solid var(--border2); border-radius: 20px; padding: 28px; width: 100%; max-width: 520px; max-height: 80vh; overflow-y: auto; }
-  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-  .modal-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
-  .modal-close { width: 32px; height: 32px; border-radius: 8px; background: var(--card2); border: 1px solid var(--border2); color: var(--text2); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-  .profile-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-  .profile-stat { background: var(--card2); border-radius: 10px; padding: 12px; text-align: center; }
-  .profile-stat-value { font-size: 20px; font-weight: 700; color: var(--orange); }
-  .profile-stat-label { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  .profile-info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-  .profile-info-row:last-child { border-bottom: none; }
-  .profile-info-label { color: var(--text2); }
-  .profile-info-value { font-weight: 600; }
-  .tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-  .tag-run { background: rgba(255,107,53,0.15); color: #FF6B35; }
-  .tag-cyc { background: rgba(76,175,80,0.15); color: #4CAF50; }
-  .tag-walk { background: rgba(33,150,243,0.15); color: #2196F3; }
-  .search-input { padding: 8px 14px; background: var(--card2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-size: 13px; font-family: var(--font); outline: none; width: 200px; }
-  .search-input:focus { border-color: var(--orange); }
-  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 999; background: var(--card); border: 1px solid var(--border2); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; max-width: 320px; }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { border-color: rgba(34,197,94,0.3); }
-  .toast.error { border-color: rgba(239,68,68,0.3); }
-  .loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--text3); gap: 10px; }
-  .spinner { width: 18px; height: 18px; border: 2px solid var(--border2); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.6s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .empty { text-align: center; padding: 40px; color: var(--text3); }
-  .empty-icon { font-size: 32px; margin-bottom: 10px; }
-  @media (max-width: 900px) {
-    .sidebar { width: 60px; }
-    .sidebar-logo span, .nav-item span, .sidebar-label, .sidebar-user-info, .btn-logout { display: none; }
-    .main { margin-left: 60px; }
-    .stats-grid, .two-col { grid-template-columns: repeat(2,1fr); }
-    .composer-grid { grid-template-columns: 1fr; }
-  }
+:root {
+  --bg: #080808;
+  --bg2: #0f0f0f;
+  --card: #141414;
+  --card2: #1a1a1a;
+  --border: #1f1f1f;
+  --border2: #2a2a2a;
+  --text: #f0f0f0;
+  --text2: #a0a0a0;
+  --text3: #555;
+  --orange: #FF6B35;
+  --orange-dim: rgba(255,107,53,0.12);
+  --gold: #FFD700;
+  --gold-dim: rgba(255,215,0,0.1);
+  --green: #4CAF50;
+  --green-dim: rgba(76,175,80,0.1);
+  --blue: #2196F3;
+  --blue-dim: rgba(33,150,243,0.1);
+  --red: #F44336;
+  --red-dim: rgba(244,67,54,0.1);
+  --purple: #9C27B0;
+  --sidebar-w: 220px;
+  --font: 'Inter', -apple-system, sans-serif;
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+
+/* Login */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.login-box{background:var(--card);border:1px solid var(--border2);border-radius:24px;padding:48px 40px;width:100%;max-width:400px;}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;}
+.login-logo-icon{width:44px;height:44px;border-radius:12px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.login-logo-text{font-size:18px;font-weight:700;color:var(--text);}
+.login-logo-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.login-title{font-size:24px;font-weight:800;margin-bottom:6px;}
+.login-sub{color:var(--text2);font-size:14px;margin-bottom:28px;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.05em;}
+.form-input{width:100%;padding:12px 16px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:14px;font-family:var(--font);outline:none;transition:border-color .2s;}
+.form-input:focus{border-color:var(--orange);}
+.login-btn{width:100%;padding:14px;background:var(--orange);border:none;border-radius:var(--radius-sm);color:#fff;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;margin-top:8px;transition:opacity .2s;}
+.login-btn:hover{opacity:.9;}
+.login-error{color:var(--red);font-size:13px;margin-top:10px;display:none;}
+
+/* App Layout */
+#app{display:none;height:100vh;overflow:hidden;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.sidebar-logo-icon{width:36px;height:36px;border-radius:10px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.sidebar-logo-text{font-size:14px;font-weight:700;}
+.sidebar-logo-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+.sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto;}
+.nav-section{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:10px 10px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;margin-bottom:2px;font-size:13px;font-weight:500;color:var(--text2);}
+.nav-item:hover{background:var(--card2);color:var(--text);}
+.nav-item.active{background:var(--orange-dim);color:var(--orange);}
+.nav-item.active .nav-icon{color:var(--orange);}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border);}
+.admin-badge{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:var(--radius-sm);padding:10px 12px;}
+.admin-avatar{width:30px;height:30px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.admin-info-name{font-size:12px;font-weight:600;}
+.admin-info-role{font-size:10px;color:var(--text3);}
+.logout-btn{font-size:11px;color:var(--red);cursor:pointer;padding:6px 0 0;text-align:center;}
+
+/* Main */
+.main{margin-left:var(--sidebar-w);height:100vh;overflow-y:auto;background:var(--bg2);width:calc(100% - var(--sidebar-w));}
+.page{display:none;padding:28px;min-height:100%;}
+.page.active{display:block;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.page-title{font-size:22px;font-weight:800;}
+.page-sub{color:var(--text3);font-size:13px;margin-top:3px;}
+
+/* Cards */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.stat-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.stat-card-label{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;}
+.stat-card-icon{width:36px;height:36px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.stat-card-value{font-size:28px;font-weight:800;margin-bottom:4px;}
+.stat-card-sub{font-size:12px;color:var(--text3);}
+.stat-card-change{font-size:11px;font-weight:600;margin-top:4px;}
+
+/* Table */
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--card2);}
+th{padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;}
+td{padding:13px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+
+/* Tags */
+.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.tag-run{background:rgba(255,107,53,0.15);color:var(--orange);}
+.tag-cyc{background:rgba(76,175,80,0.15);color:var(--green);}
+.tag-wal{background:rgba(33,150,243,0.15);color:var(--blue);}
+.tag-pro{background:var(--gold-dim);color:var(--gold);}
+
+/* User cards */
+.user-grid{display:flex;flex-direction:column;gap:10px;}
+.user-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;transition:border-color .2s;}
+.user-card:hover{border-color:var(--border2);}
+.user-avatar{width:44px;height:44px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;}
+.user-avatar img{width:100%;height:100%;object-fit:cover;}
+.user-info{flex:1;min-width:0;}
+.user-name{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.user-email{font-size:12px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-meta{font-size:11px;color:var(--text3);margin-top:4px;}
+.user-stats{display:flex;gap:20px;flex-shrink:0;}
+.user-stat{text-align:center;}
+.user-stat-value{font-size:15px;font-weight:700;color:var(--orange);}
+.user-stat-label{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* Chart */
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:8px;height:120px;padding:0 4px;}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .3s;}
+.chart-bar-label{font-size:10px;color:var(--text3);}
+
+/* Notif form */
+.notif-form{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;}
+.notif-form-title{font-size:15px;font-weight:700;margin-bottom:16px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-select{padding:11px 14px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:13px;font-family:var(--font);outline:none;cursor:pointer;}
+.form-select:focus{border-color:var(--orange);}
+textarea.form-input{resize:vertical;min-height:80px;}
+.btn{padding:10px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;border:none;transition:opacity .2s;display:inline-flex;align-items:center;gap:8px;}
+.btn:hover{opacity:.85;}
+.btn-primary{background:var(--orange);color:#fff;}
+.btn-secondary{background:var(--card2);color:var(--text);border:1px solid var(--border2);}
+.btn-green{background:var(--green);color:#fff;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-gold{background:var(--gold);color:#000;}
+
+/* Loading / empty */
+.loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:48px;color:var(--text3);font-size:14px;}
+.spinner{width:20px;height:20px;border:2px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;color:var(--text3);gap:10px;}
+.empty-icon{font-size:40px;opacity:.3;}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px 18px;font-size:13px;font-weight:600;z-index:9999;display:none;animation:fadein .2s;}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.toast.success{border-color:rgba(76,175,80,0.4);color:var(--green);}
+.toast.error{border-color:rgba(244,67,54,0.4);color:var(--red);}
+
+/* Search */
+.search-input{padding:9px 14px;background:var(--card2);border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;font-family:var(--font);outline:none;width:220px;}
+.search-input:focus{border-color:var(--orange);}
+
+/* Chat bubbles */
+.chat-wrap{max-height:300px;overflow-y:auto;padding:12px 0;}
+.chat-msg{display:flex;margin-bottom:8px;}
+.chat-msg.user{justify-content:flex-end;}
+.chat-bubble{max-width:72%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.5;}
+.chat-msg.user .chat-bubble{background:var(--orange);color:#fff;border-bottom-right-radius:3px;}
+.chat-msg.ai .chat-bubble{background:var(--card2);color:var(--text);border:1px solid var(--border2);border-bottom-left-radius:3px;}
+
+/* Route modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9998;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--card);border:1px solid var(--border2);border-radius:20px;overflow:hidden;width:100%;max-width:720px;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+.modal-title{font-size:16px;font-weight:700;}
+.modal-close{background:var(--card2);border:none;color:var(--text2);padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-family:var(--font);}
+
+/* Schedule */
+.schedule-list{display:flex;flex-direction:column;gap:10px;}
+.schedule-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;}
+.schedule-time{font-size:12px;color:var(--text3);white-space:nowrap;}
+.schedule-status{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.status-pending{background:rgba(255,193,7,0.15);color:#FFC107;}
+.status-sent{background:var(--green-dim);color:var(--green);}
+
+/* Two col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.section-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.section-card-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px;}
+
+/* Leaderboard */
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);}
+.lb-row:last-child{border-bottom:none;}
+.lb-rank{font-size:20px;width:32px;text-align:center;flex-shrink:0;}
+.lb-avatar{width:36px;height:36px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;}
+.lb-avatar img{width:100%;height:100%;object-fit:cover;}
+.lb-info{flex:1;}
+.lb-name{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.lb-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.lb-dist{font-size:16px;font-weight:800;color:var(--orange);}
+
+/* Premium card */
+.premium-card{background:linear-gradient(135deg,rgba(255,215,0,0.06),rgba(255,107,53,0.06));border:1px solid rgba(255,215,0,0.2);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;}
+
+/* Revenue card */
+.revenue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+
+/* Responsive */
+@media(max-width:900px){
+  .sidebar{width:60px;}
+  .sidebar-logo-text,.sidebar-logo-sub,.nav-item span,.admin-info-name,.admin-info-role,.logout-btn{display:none;}
+  .nav-item{justify-content:center;padding:10px;}
+  .main{margin-left:60px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .form-row{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Login -->
 <div id="login-screen">
-  <div class="login-card">
-    <div class="login-logo"><div class="login-logo-icon">CF</div><span>Custom Fitness Admin</span></div>
-    <div style="font-size:22px;font-weight:700;font-family:var(--font-display);margin-bottom:6px;">Admin Panel</div>
-    <div style="color:var(--text2);font-size:13px;margin-bottom:28px;">Sign in with your admin credentials</div>
-    <input type="hidden" id="supabase-url" value="https://uxiozoaikghvtcywzhbp.supabase.co" />
-    <input type="hidden" id="service-key" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4aW96b2Fpa2dodnRjeXd6aGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDk0NzA0NCwiZXhwIjoyMDk2NTIzMDQ0fQ.o9IJvHfC99vYbvqE2xD9TLjsuKdruS6WQW40ZmdXlU4" />
-    <div class="form-group"><label class="form-label">EMAIL</label><input class="form-input" id="admin-email" type="email" placeholder="your@email.com" /></div>
-    <div class="form-group"><label class="form-label">PASSWORD</label><input class="form-input" id="admin-password" type="password" placeholder="••••••••" /></div>
-    <button class="btn-login" onclick="handleLogin()">Sign In</button>
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon" style="padding:0;overflow:hidden;"><img src="logo.png" style="width:44px;height:44px;border-radius:12px;object-fit:cover;"/></div>
+      <div>
+        <div class="login-logo-text">Custom Fitness</div>
+        <div class="login-logo-sub">Admin Panel</div>
+      </div>
+    </div>
+    <div class="login-title">Welcome back</div>
+    <div class="login-sub">Sign in to manage your app</div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="admin-email" placeholder="admin@example.com"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="admin-password" placeholder="••••••••"/>
+    </div>
+    <button class="login-btn" onclick="handleLogin()">Sign In →</button>
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- App -->
 <div id="app">
+  <!-- Sidebar -->
   <div class="sidebar">
-    <div class="sidebar-logo"><div class="sidebar-logo-icon">CF</div><span>Admin</span></div>
-    <div class="sidebar-label">Main</div>
-    <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span><span>Dashboard</span></div>
-    <div class="nav-item" onclick="showPage('analytics',this)"><span class="nav-icon">📈</span><span>Analytics</span></div>
-    <div class="sidebar-label">Notifications</div>
-    <div class="nav-item" onclick="showPage('notifications',this)"><span class="nav-icon">🔔</span><span>Send Now</span></div>
-    <div class="nav-item" onclick="showPage('schedule',this)"><span class="nav-icon">🗓️</span><span>Schedule</span></div>
-    <div class="nav-item" onclick="showPage('history',this)"><span class="nav-icon">📋</span><span>History</span></div>
-    <div class="sidebar-label">Data</div>
-    <div class="nav-item" onclick="showPage('users',this)"><span class="nav-icon">👥</span><span>Users</span></div>
-    <div class="nav-item" onclick="showPage('activities',this)"><span class="nav-icon">🏃</span><span>Activities</span></div>
-    <div class="nav-item" onclick="showPage('leaderboard',this)"><span class="nav-icon">🏆</span><span>Leaderboard</span></div>
-    <div class="nav-item" onclick="showPage('premium',this)"><span class="nav-icon">👑</span><span>Premium</span></div>
-    <div class="nav-item" onclick="showPage('aichats',this)"><span class="nav-icon">✨</span><span>AI Chats</span></div>
-    <div class="sidebar-bottom">
-      <div class="sidebar-user">
-        <div class="sidebar-avatar" id="sidebar-avatar">A</div>
-        <div class="sidebar-user-info"><div class="sidebar-user-name" id="sidebar-email">Admin</div><div class="sidebar-user-role">Administrator</div></div>
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon" style="padding:0;overflow:hidden;"><img src="logo.png" style="width:36px;height:36px;border-radius:10px;object-fit:cover;"/></div>
+      <div>
+        <div class="sidebar-logo-text">Custom Fitness</div>
+        <div class="sidebar-logo-sub">Admin Panel</div>
       </div>
-      <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span><span>Dashboard</span></div>
+      <div class="nav-item" onclick="showPage('analytics',this)"><span class="nav-icon">📈</span><span>Analytics</span></div>
+      <div class="nav-section">Notifications</div>
+      <div class="nav-item" onclick="showPage('send',this)"><span class="nav-icon">🔔</span><span>Send Now</span></div>
+      <div class="nav-item" onclick="showPage('schedule',this)"><span class="nav-icon">🗓</span><span>Schedule</span></div>
+      <div class="nav-item" onclick="showPage('history',this)"><span class="nav-icon">📋</span><span>History</span></div>
+      <div class="nav-section">Data</div>
+      <div class="nav-item" onclick="showPage('users',this)"><span class="nav-icon">👥</span><span>Users</span></div>
+      <div class="nav-item" onclick="showPage('activities',this)"><span class="nav-icon">🏃</span><span>Activities</span></div>
+      <div class="nav-item" onclick="showPage('leaderboard',this)"><span class="nav-icon">🏆</span><span>Leaderboard</span></div>
+      <div class="nav-section">Monetization</div>
+      <div class="nav-item" onclick="showPage('premium',this)"><span class="nav-icon">👑</span><span>Premium</span></div>
+      <div class="nav-item" onclick="showPage('aichats',this)"><span class="nav-icon">✨</span><span>AI Chats</span></div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-badge">
+        <div class="admin-avatar">A</div>
+        <div>
+          <div class="admin-info-name">Admin</div>
+          <div class="admin-info-role">Super Admin</div>
+        </div>
+      </div>
+      <div class="logout-btn" onclick="handleLogout()">Sign out</div>
     </div>
   </div>
 
+  <!-- Main Content -->
   <div class="main">
 
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="topbar">
-        <div><div class="page-title">Dashboard</div><div class="page-sub">Custom Fitness overview</div></div>
-        <div style="display:flex;gap:10px;align-items:center;">
-          <div class="badge-live"><span></span> Live</div>
-          <button onclick="loadDashboard()" style="padding:8px 14px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">🔄 Refresh</button>
+        <div><div class="page-title">Dashboard</div><div class="page-sub">App overview at a glance</div></div>
+        <button class="btn btn-secondary" onclick="loadDashboard()">↻ Refresh</button>
+      </div>
+      <div class="stats-grid" id="dash-stats">
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Users</div><div class="stat-card-icon" style="background:var(--orange-dim)">👥</div></div><div class="stat-card-value" id="s-users" style="color:var(--orange)">—</div><div class="stat-card-sub">Registered accounts</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Activities</div><div class="stat-card-icon" style="background:var(--green-dim)">🏃</div></div><div class="stat-card-value" id="s-acts" style="color:var(--green)">—</div><div class="stat-card-sub">Total logged</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Distance</div><div class="stat-card-icon" style="background:var(--blue-dim)">📍</div></div><div class="stat-card-value" id="s-dist" style="color:var(--blue)">—</div><div class="stat-card-sub">km tracked</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Pro Users</div><div class="stat-card-icon" style="background:var(--gold-dim)">👑</div></div><div class="stat-card-value" id="s-pro" style="color:var(--gold)">—</div><div class="stat-card-sub" id="s-revenue">Revenue —</div></div>
+      </div>
+      <div class="two-col">
+        <div class="section-card">
+          <div class="section-card-title">Recent Activities</div>
+          <div id="dash-recent"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">Activity Breakdown</div>
+          <div id="dash-breakdown"><div class="loading"><div class="spinner"></div></div></div>
         </div>
       </div>
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Users</div><div class="stat-card-icon" style="background:var(--orange-dim);">👥</div></div><div class="stat-card-value" id="stat-users">—</div><div class="stat-card-sub">Registered accounts</div></div>
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Activities</div><div class="stat-card-icon" style="background:var(--green-dim);">🏃</div></div><div class="stat-card-value" id="stat-activities">—</div><div class="stat-card-sub">Across all users</div></div>
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Distance</div><div class="stat-card-icon" style="background:var(--blue-dim);">📍</div></div><div class="stat-card-value" id="stat-distance">—</div><div class="stat-card-sub">km tracked globally</div></div>
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Push Devices</div><div class="stat-card-icon" style="background:rgba(245,158,11,0.1);">🔔</div></div><div class="stat-card-value" id="stat-tokens">—</div><div class="stat-card-sub">Registered devices</div></div>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Running</div><div class="stat-card-icon" style="background:var(--orange-dim);">🏃</div></div><div class="stat-card-value" id="stat-runs" style="color:var(--orange);">—</div><div class="stat-card-sub">Total runs</div></div>
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Cycling</div><div class="stat-card-icon" style="background:var(--green-dim);">🚴</div></div><div class="stat-card-value" id="stat-cycles" style="color:var(--green);">—</div><div class="stat-card-sub">Total rides</div></div>
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Walking</div><div class="stat-card-icon" style="background:var(--blue-dim);">🚶</div></div><div class="stat-card-value" id="stat-walks" style="color:var(--blue);">—</div><div class="stat-card-sub">Total walks</div></div>
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Calories</div><div class="stat-card-icon" style="background:var(--red-dim);">🔥</div></div><div class="stat-card-value" id="stat-calories" style="color:var(--red);">—</div><div class="stat-card-sub">Burned globally</div></div>
-      </div>
-      <div class="table-card">
-        <div class="table-header"><div class="table-title">Recent Activities</div></div>
-        <table><thead><tr><th>User</th><th>Type</th><th>Name</th><th>Distance</th><th>Duration</th><th>Calories</th><th>Date</th></tr></thead>
-        <tbody id="recent-activities-table"><tr><td colspan="7"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody></table>
+      <div class="section-card" style="margin-top:16px;">
+        <div class="section-card-title">Recent Users</div>
+        <div id="dash-users"><div class="loading"><div class="spinner"></div></div></div>
       </div>
     </div>
 
     <!-- ANALYTICS -->
     <div class="page" id="page-analytics">
-      <div class="topbar"><div><div class="page-title">Analytics</div><div class="page-sub">App performance insights</div></div></div>
-      <div class="two-col">
-        <div class="chart-container">
-          <div class="chart-title">Activities by Type</div>
-          <div class="donut-row">
-            <canvas id="donut-chart" width="120" height="120"></canvas>
-            <div class="donut-legend" id="donut-legend"></div>
-          </div>
-        </div>
-        <div class="chart-container">
-          <div class="chart-title">Top 5 Users by Distance</div>
-          <div id="top-users-chart"></div>
-        </div>
+      <div class="topbar"><div><div class="page-title">Analytics</div><div class="page-sub">Usage trends & insights</div></div></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Avg Distance</div><div class="stat-card-icon" style="background:var(--orange-dim)">📏</div></div><div class="stat-card-value" id="a-avg-dist" style="color:var(--orange)">—</div><div class="stat-card-sub">per activity (km)</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Push Tokens</div><div class="stat-card-icon" style="background:var(--blue-dim)">📲</div></div><div class="stat-card-value" id="a-tokens" style="color:var(--blue)">—</div><div class="stat-card-sub">devices registered</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Conversion</div><div class="stat-card-icon" style="background:var(--gold-dim)">💰</div></div><div class="stat-card-value" id="a-conv" style="color:var(--gold)">—</div><div class="stat-card-sub">free → pro rate</div></div>
       </div>
       <div class="two-col">
-        <div class="chart-container">
-          <div class="chart-title">Distance by Type (km)</div>
-          <div style="display:flex;gap:12px;height:120px;align-items:flex-end;" id="distance-bars"></div>
+        <div class="section-card">
+          <div class="section-card-title">Activity Types</div>
+          <div id="a-types" style="padding-top:8px;"><div class="loading"><div class="spinner"></div></div></div>
         </div>
-        <div class="chart-container">
-          <div class="chart-title">App Stats Summary</div>
-          <div id="app-summary"></div>
+        <div class="section-card">
+          <div class="section-card-title">Top Performers</div>
+          <div id="a-top"><div class="loading"><div class="spinner"></div></div></div>
         </div>
       </div>
     </div>
 
-    <!-- SEND NOTIFICATION -->
-    <div class="page" id="page-notifications">
-      <div class="topbar"><div><div class="page-title">Send Notification</div><div class="page-sub">Fire a live push notification to all users</div></div></div>
-      <div class="composer-card">
-        <div class="composer-title">Compose Notification</div>
-        <div class="composer-sub">Sent immediately to all registered devices</div>
-        <div class="form-group"><label class="form-label">TITLE</label><input class="form-input" id="notif-title" type="text" placeholder="e.g. Time to move!" oninput="updatePreview()" /></div>
-        <div class="form-group"><label class="form-label">MESSAGE</label><textarea class="form-textarea" id="notif-body" placeholder="Notification message..." oninput="updatePreview()"></textarea></div>
-        <div class="composer-grid">
-          <div class="form-group" style="margin:0;"><label class="form-label">TARGET SCREEN</label>
-            <select class="form-select" id="notif-screen" onchange="updatePreview();toggleNotifUrl()">
-              <option value="Home">Home</option><option value="Activity">Activity</option><option value="History">History</option><option value="Stats">Stats</option><option value="Profile">Profile</option><option value="url">🌐 External URL</option>
+    <!-- SEND NOW -->
+    <div class="page" id="page-send">
+      <div class="topbar"><div><div class="page-title">Send Notification</div><div class="page-sub">Push to all users instantly</div></div></div>
+      <div class="notif-form">
+        <div class="notif-form-title">📢 Compose Notification</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input class="form-input" id="notif-title" placeholder="Notification title..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Screen (optional)</label>
+            <select class="form-select" id="notif-screen">
+              <option value="">No navigation</option>
+              <option value="Home">Home</option>
+              <option value="Activity">Activity</option>
+              <option value="History">History</option>
+              <option value="Stats">Stats</option>
+              <option value="Profile">Profile</option>
+              <option value="Premium">Premium</option>
+              <option value="AIChat">AI Chat</option>
             </select>
-            <input class="form-input" id="notif-url" type="url" placeholder="https://..." style="margin-top:8px;display:none;" oninput="updatePreview()" /></div>
-          <div class="form-group" style="margin:0;"><label class="form-label">RECIPIENTS</label><select class="form-select" id="notif-target" onchange="updateRecipientCount()"><option value="all">All Users</option></select></div>
+          </div>
         </div>
-        <div class="composer-footer">
-          <div class="recipient-info">🎯 Sending to <span class="recipient-count" id="token-count">—</span> devices</div>
-          <button class="btn-send" id="send-btn" onclick="sendNotification()">🚀 Send Now</button>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-input" id="notif-body" placeholder="Write your message..."></textarea>
         </div>
-      </div>
-      <div class="composer-card">
-        <div class="composer-title">Live Preview</div>
-        <div class="notif-preview">
-          <div class="notif-preview-icon">💪</div>
-          <div><div class="notif-preview-app">CustomFitness · now</div><div class="notif-preview-title" id="preview-title">Your notification title</div><div class="notif-preview-body" id="preview-body">Your message...</div><div style="font-size:11px;color:var(--text3);margin-top:4px;">Opens → <span id="preview-screen">Home</span></div></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="sendNow()">🚀 Send to All Users</button>
+          <button class="btn btn-secondary" onclick="fillTemplate('workout')">💪 Workout Reminder</button>
+          <button class="btn btn-secondary" onclick="fillTemplate('streak')">🔥 Streak Alert</button>
+          <button class="btn btn-secondary" onclick="fillTemplate('pro')">👑 Go Pro</button>
         </div>
       </div>
-      <div class="composer-card">
-        <div class="composer-title">Quick Templates</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;" id="templates-grid"></div>
+      <div class="section-card">
+        <div class="section-card-title">Quick Templates</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;" id="templates-grid"></div>
       </div>
     </div>
 
     <!-- SCHEDULE -->
     <div class="page" id="page-schedule">
-      <div class="topbar"><div><div class="page-title">Schedule Notification</div><div class="page-sub">Send at a specific future time</div></div></div>
-      <div class="composer-card">
-        <div class="composer-title">Schedule a Notification</div>
-        <div class="composer-sub">It fires automatically at the set time</div>
-        <div class="form-group"><label class="form-label">TITLE</label><input class="form-input" id="sched-title" type="text" placeholder="Notification title" /></div>
-        <div class="form-group"><label class="form-label">MESSAGE</label><textarea class="form-textarea" id="sched-body" placeholder="Notification message..."></textarea></div>
-        <div class="composer-grid">
-          <div class="form-group" style="margin:0;"><label class="form-label">TARGET SCREEN</label>
-            <select class="form-select" id="sched-screen" onchange="toggleSchedUrl()">
-              <option value="Home">Home</option><option value="Activity">Activity</option><option value="History">History</option><option value="Stats">Stats</option><option value="Profile">Profile</option><option value="url">🌐 External URL</option>
-            </select>
-            <input class="form-input" id="sched-url" type="url" placeholder="https://..." style="margin-top:8px;display:none;" /></div>
-          <div class="form-group" style="margin:0;"><label class="form-label">DATE & TIME</label><input class="form-input" id="sched-datetime" type="datetime-local" /></div>
+      <div class="topbar"><div><div class="page-title">Schedule</div><div class="page-sub">Upcoming notifications</div></div></div>
+      <div class="notif-form">
+        <div class="notif-form-title">🗓 Schedule Notification</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input class="form-input" id="sched-title" placeholder="Title..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date & Time</label>
+            <input class="form-input" type="datetime-local" id="sched-time"/>
+          </div>
         </div>
-        <div style="margin-top:16px;display:flex;justify-content:flex-end;"><button class="btn-send" onclick="scheduleNotification()">🗓️ Schedule</button></div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-input" id="sched-body" placeholder="Message..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="scheduleNotif()">📅 Schedule</button>
       </div>
-      <div class="table-card">
-        <div class="table-header"><div class="table-title">Scheduled</div>
-          <button onclick="clearAllScheduled()" style="padding:6px 12px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);border-radius:8px;color:var(--red);font-size:12px;cursor:pointer;font-family:var(--font);">Clear All</button>
-        </div>
-        <table><thead><tr><th>Title</th><th>Message</th><th>Screen</th><th>Scheduled For</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody id="scheduled-table"><tr><td colspan="6"><div class="empty"><div class="empty-icon">🗓️</div>No scheduled notifications</div></td></tr></tbody></table>
+      <div class="section-card">
+        <div class="section-card-title">Scheduled</div>
+        <div id="sched-list"><div class="loading"><div class="spinner"></div></div></div>
       </div>
     </div>
 
     <!-- HISTORY -->
     <div class="page" id="page-history">
-      <div class="topbar"><div><div class="page-title">Notification History</div><div class="page-sub">All notifications sent</div></div>
-        <button onclick="clearHistory()" style="padding:8px 16px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);border-radius:8px;color:var(--red);font-size:12px;cursor:pointer;font-family:var(--font);">Clear History</button>
+      <div class="topbar">
+        <div><div class="page-title">Notification History</div><div class="page-sub">All sent notifications</div></div>
+        <button class="btn btn-secondary" onclick="loadHistory()">↻ Refresh</button>
       </div>
-      <div class="table-card"><table><thead><tr><th>Title</th><th>Message</th><th>Screen</th><th>Recipients</th><th>Status</th><th>Sent At</th></tr></thead>
-      <tbody id="history-table"><tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div>No notifications sent yet</div></td></tr></tbody></table></div>
+      <div class="table-card">
+        <table><thead><tr><th>Title</th><th>Message</th><th>Screen</th><th>Sent At</th></tr></thead>
+        <tbody id="history-table"><tr><td colspan="4"><div class="loading"><div class="spinner"></div></div></td></tr></tbody></table>
+      </div>
     </div>
 
     <!-- USERS -->
@@ -319,223 +422,377 @@
       <div class="topbar">
         <div><div class="page-title">Users</div><div class="page-sub">All registered users</div></div>
         <div style="display:flex;gap:10px;">
-          <input class="search-input" id="user-search" placeholder="🔍 Search users..." oninput="filterUsers()" />
-          <button onclick="downloadUserReport()" style="padding:8px 16px;background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);border-radius:8px;color:var(--green);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">⬇ Download CSV</button>
+          <input class="search-input" id="user-search" placeholder="🔍 Search users..." oninput="filterUsers()"/>
+          <button class="btn btn-secondary" onclick="downloadCSV(buildUserCSV(),'cf-users.csv')">⬇ CSV</button>
         </div>
       </div>
-      <div id="users-grid"><div class="loading"><div class="spinner"></div> Loading users...</div></div>
+      <div class="user-grid" id="users-grid"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
     <!-- ACTIVITIES -->
     <div class="page" id="page-activities">
       <div class="topbar">
-        <div><div class="page-title">All Activities</div><div class="page-sub">Every activity logged</div></div>
+        <div><div class="page-title">Activities</div><div class="page-sub">All logged activities</div></div>
         <div style="display:flex;gap:10px;">
-          <select class="form-select" id="activity-filter" onchange="filterActivities()" style="width:140px;">
-            <option value="All">All Types</option><option value="Running">Running</option><option value="Cycling">Cycling</option><option value="Walking">Walking</option>
+          <select class="form-select" id="act-filter" onchange="filterActivities()" style="width:130px;">
+            <option value="All">All Types</option>
+            <option value="Running">Running</option>
+            <option value="Cycling">Cycling</option>
+            <option value="Walking">Walking</option>
           </select>
-          <button onclick="downloadActivityReport()" style="padding:8px 16px;background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);border-radius:8px;color:var(--green);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">⬇ Download CSV</button>
+          <button class="btn btn-secondary" onclick="downloadCSV(buildActivityCSV(),'cf-activities.csv')">⬇ CSV</button>
         </div>
       </div>
-      <div class="table-card"><table><thead><tr><th>User</th><th>Type</th><th>Name</th><th>Distance</th><th>Duration</th><th>Pace</th><th>Calories</th><th>Date</th></tr></thead>
-      <tbody id="all-activities-table"><tr><td colspan="8"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr></tbody></table></div>
+      <div class="table-card">
+        <table><thead><tr><th>User</th><th>Type</th><th>Name</th><th>Distance</th><th>Duration</th><th>Pace</th><th>Calories</th><th>Date</th><th>Route</th></tr></thead>
+        <tbody id="acts-table"><tr><td colspan="9"><div class="loading"><div class="spinner"></div></div></td></tr></tbody></table>
+      </div>
     </div>
 
     <!-- LEADERBOARD -->
     <div class="page" id="page-leaderboard">
-      <div class="topbar"><div><div class="page-title">Leaderboard</div><div class="page-sub">Top athletes by total distance</div></div>
-        <div style="display:flex;gap:8px;">
-          <button onclick="loadLeaderboard('Running')" id="lb-run" style="padding:8px 14px;background:rgba(255,107,53,0.15);border:1px solid #FF6B35;border-radius:8px;color:#FF6B35;font-size:12px;cursor:pointer;font-family:var(--font);">🏃 Running</button>
-          <button onclick="loadLeaderboard('Cycling')" id="lb-cyc" style="padding:8px 14px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">🚴 Cycling</button>
-          <button onclick="loadLeaderboard('Walking')" id="lb-walk" style="padding:8px 14px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">🚶 Walking</button>
-        </div>
+      <div class="topbar"><div><div class="page-title">Leaderboard</div><div class="page-sub">Top athletes by distance</div></div></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button class="btn btn-secondary active" id="lb-run" onclick="loadLeaderboard('Running')">🏃 Running</button>
+        <button class="btn btn-secondary" id="lb-cyc" onclick="loadLeaderboard('Cycling')">🚴 Cycling</button>
+        <button class="btn btn-secondary" id="lb-wal" onclick="loadLeaderboard('Walking')">🚶 Walking</button>
       </div>
-      <div id="leaderboard-content"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+      <div class="section-card" id="lb-content"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
-  </div>
-</div>
-
-    <!-- PREMIUM USERS -->
+    <!-- PREMIUM -->
     <div class="page" id="page-premium">
       <div class="topbar">
-        <div><div class="page-title">Premium Users</div><div class="page-sub">All Pro members</div></div>
-        <button onclick="downloadPremiumReport()" style="padding:8px 16px;background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);border-radius:8px;color:var(--green);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">⬇ Download CSV</button>
+        <div><div class="page-title">Premium</div><div class="page-sub">Pro members & revenue</div></div>
+        <button class="btn btn-gold" onclick="downloadCSV(buildPremiumCSV(),'cf-premium.csv')">⬇ Export CSV</button>
       </div>
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Total Pro Users</div><div class="stat-card-icon" style="background:rgba(255,215,0,0.1);">👑</div></div><div class="stat-card-value" id="stat-premium-count" style="color:#FFD700;">—</div><div class="stat-card-sub">Lifetime members</div></div>
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Revenue</div><div class="stat-card-icon" style="background:var(--green-dim);">💰</div></div><div class="stat-card-value" id="stat-premium-revenue" style="color:var(--green);">—</div><div class="stat-card-sub">Total earned (₹19/user)</div></div>
-        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Conversion Rate</div><div class="stat-card-icon" style="background:var(--blue-dim);">📊</div></div><div class="stat-card-value" id="stat-premium-rate" style="color:var(--blue);">—</div><div class="stat-card-sub">Free to Pro</div></div>
+      <div class="revenue-grid">
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Pro Users</div><div class="stat-card-icon" style="background:var(--gold-dim)">👑</div></div><div class="stat-card-value" id="p-count" style="color:var(--gold)">—</div><div class="stat-card-sub">Lifetime members</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Revenue</div><div class="stat-card-icon" style="background:var(--green-dim)">💰</div></div><div class="stat-card-value" id="p-revenue" style="color:var(--green)">—</div><div class="stat-card-sub">₹19 per user</div></div>
+        <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Conversion</div><div class="stat-card-icon" style="background:var(--blue-dim)">📊</div></div><div class="stat-card-value" id="p-rate" style="color:var(--blue)">—</div><div class="stat-card-sub">Free → Pro rate</div></div>
       </div>
-      <div id="premium-users-grid"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+      <div class="user-grid" id="premium-grid"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
     <!-- AI CHATS -->
     <div class="page" id="page-aichats">
       <div class="topbar">
-        <div><div class="page-title">AI Chat History</div><div class="page-sub">All user conversations with AI Coach</div></div>
-        <div style="display:flex;gap:10px;">
-          <input class="search-input" id="chat-search" placeholder="🔍 Search by user..." oninput="filterChats()" />
-        </div>
+        <div><div class="page-title">AI Chats</div><div class="page-sub">User conversations with AI Coach</div></div>
+        <input class="search-input" id="chat-search" placeholder="🔍 Search by user..." oninput="filterChats()"/>
       </div>
-      <div id="aichats-content"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+      <div id="chats-grid"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
-<!-- User Modal -->
-<div class="modal-overlay" id="user-modal">
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- Route Modal -->
+<div class="modal-overlay" id="route-modal">
   <div class="modal-box">
     <div class="modal-header">
-      <div class="modal-title">User Profile</div>
-      <button class="modal-close" onclick="closeUserModal()">✕</button>
+      <div class="modal-title" id="route-modal-title">Route Map</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div id="route-modal-meta" style="font-size:12px;color:var(--text3);"></div>
+        <button class="modal-close" onclick="closeRouteModal()">✕ Close</button>
+      </div>
     </div>
-    <div id="user-modal-content"></div>
+    <iframe id="route-iframe" style="width:100%;height:480px;border:none;" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
 </div>
 
-<div class="toast" id="toast"><span id="toast-icon">✅</span><span id="toast-msg">Done!</span></div>
-
 <script>
-let SUPABASE_URL = 'https://uxiozoaikghvtcywzhbp.supabase.co', SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4aW96b2Fpa2dodnRjeXd6aGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDk0NzA0NCwiZXhwIjoyMDk2NTIzMDQ0fQ.o9IJvHfC99vYbvqE2xD9TLjsuKdruS6WQW40ZmdXlU4';
-let allUsers = [], allActivities = [], allProfiles = [];
-let notifHistory = JSON.parse(localStorage.getItem('cf_notif_history') || '[]');
+const SUPABASE_URL = 'https://uxiozoaikghvtcywzhbp.supabase.co';
+const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4aW96b2Fpa2dodnRjeXd6aGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDk0NzA0NCwiZXhwIjoyMDk2NTIzMDQ0fQ.o9IJvHfC99vYbvqE2xD9TLjsuKdruS6WQW40ZmdXlU4';
 const ADMIN_EMAIL = 'ec21ishpreetsingh@global.org.in';
 const ADMIN_PASSWORD = 'superadmin@123';
+const PRICE = 19;
 
-const templates = [
-  { title: 'Time to move!', body: 'Keep your streak alive! Log a run, ride or walk today.', screen: 'Activity', icon: '🏃' },
-  { title: 'Check the leaderboard!', body: 'See how you rank against other athletes this week.', screen: 'Home', icon: '🏆' },
-  { title: 'Weekend warrior time!', body: 'Perfect day for a long run or ride. Get outside!', screen: 'Activity', icon: '💪' },
-  { title: 'Update your body stats!', body: 'Track your fitness progress. Update your weight and height.', screen: 'Profile', icon: '⚖️' },
-  { title: 'New challenge!', body: 'Can you hit 10km this week? Start your activity now!', screen: 'Activity', icon: '🎯' },
-  { title: 'You are on a streak!', body: 'Keep going! Log an activity today to maintain your streak.', screen: 'Stats', icon: '🔥' },
-  { title: 'Midweek check-in!', body: "You're halfway through the week. How's your fitness goal going?", screen: 'Stats', icon: '📊' },
-  { title: 'App update!', body: 'New features have been added. Check out the latest update!', screen: 'Home', icon: '🆕' },
-];
+let allUsers = [], allActivities = [], allProfiles = [], allChats = [], allPremium = [];
+let currentLbType = 'Running';
 
-async function supabaseFetch(path, options = {}) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    ...options,
-    headers: { 'apikey': SERVICE_KEY, 'Authorization': `Bearer ${SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...options.headers },
-  });
-  if (!res.ok) throw new Error(await res.text());
-  const text = await res.text();
-  return text ? JSON.parse(text) : [];
-}
-
+// === AUTH ===
 async function handleLogin() {
-  const url = document.getElementById('supabase-url').value.trim();
-  const key = document.getElementById('service-key').value.trim();
   const email = document.getElementById('admin-email').value.trim();
   const pass = document.getElementById('admin-password').value.trim();
-  const errEl = document.getElementById('login-error');
-  if (!email || !pass) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display = 'block'; return; }
-  if (email !== ADMIN_EMAIL || pass !== ADMIN_PASSWORD) { errEl.textContent = 'Invalid admin credentials.'; errEl.style.display = 'block'; return; }
-  SUPABASE_URL = url; SERVICE_KEY = key;
-  try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, { method: 'POST', headers: { 'apikey': SERVICE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error_description || data.error);
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('sidebar-email').textContent = email;
-    document.getElementById('sidebar-avatar').textContent = email.charAt(0).toUpperCase();
-    loadDashboard(); loadTemplates(); loadTokenCount(); loadHistory();
-  } catch (e) { errEl.textContent = 'Login failed: ' + e.message; errEl.style.display = 'block'; }
+  const err = document.getElementById('login-error');
+  if (!email || !pass) { err.textContent = 'Fill in all fields.'; err.style.display = 'block'; return; }
+  if (email !== ADMIN_EMAIL || pass !== ADMIN_PASSWORD) { err.textContent = 'Invalid credentials.'; err.style.display = 'block'; return; }
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  loadDashboard();
 }
 
-function handleLogout() { SUPABASE_URL = ''; SERVICE_KEY = ''; document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none'; }
+function handleLogout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
 
+// === FETCH ===
+async function sf(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation', ...options.headers }
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const txt = await res.text();
+  return txt ? JSON.parse(txt) : [];
+}
+
+// === NAV ===
 function showPage(name, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   if (el) el.classList.add('active');
-  if (name === 'users') loadUsers();
-  if (name === 'notifications') loadUsers();
-  if (name === 'activities') loadAllActivities();
-  if (name === 'history') loadHistory();
-  if (name === 'schedule') loadScheduled();
-  if (name === 'analytics') loadAnalytics();
-  if (name === 'leaderboard') loadLeaderboard('Running');
-  if (name === 'premium') loadPremiumUsers();
-  if (name === 'aichats') loadAIChats();
+  const loaders = { dashboard: loadDashboard, analytics: loadAnalytics, history: loadHistory, users: loadUsers, activities: loadActivities, leaderboard: () => loadLeaderboard('Running'), premium: loadPremium, aichats: loadAIChats, schedule: loadScheduled };
+  if (loaders[name]) loaders[name]();
 }
 
+// === TOAST ===
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type; t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+// === AVATAR ===
+function avatar(p, size = 44, extra = '') {
+  if (p?.avatar_url) return `<img src="${p.avatar_url}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;${extra}"/>`;
+  const init = (p?.name || 'A').charAt(0).toUpperCase();
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:${size*0.35}px;font-weight:700;color:#fff;flex-shrink:0;">${init}</div>`;
+}
+
+function proBadge(is_premium) {
+  return is_premium ? ' <span class="tag tag-pro">👑 Pro</span>' : '';
+}
+
+// === DASHBOARD ===
 async function loadDashboard() {
   try {
     const [profiles, activities, tokens] = await Promise.all([
-      supabaseFetch('profiles?select=id'),
-      supabaseFetch('activities?select=id,distance,type,name,date,duration,user_id&order=created_at.desc&limit=100'),
-      supabaseFetch('push_tokens?select=token'),
-    ]);
-    document.getElementById('stat-users').textContent = profiles.length;
-    document.getElementById('stat-activities').textContent = activities.length;
-    document.getElementById('stat-tokens').textContent = tokens.length;
-    const totalDist = activities.reduce((s, a) => s + parseFloat(a.distance || 0), 0).toFixed(1);
-    document.getElementById('stat-distance').textContent = totalDist;
-    document.getElementById('stat-runs').textContent = activities.filter(a => a.type === 'Running').length;
-    document.getElementById('stat-cycles').textContent = activities.filter(a => a.type === 'Cycling').length;
-    document.getElementById('stat-walks').textContent = activities.filter(a => a.type === 'Walking').length;
-    document.getElementById('stat-calories').textContent = activities.reduce((s, a) => s + Math.floor(parseFloat(a.distance || 0) * 60), 0).toLocaleString();
-    const userIds = [...new Set(activities.map(a => a.user_id))];
-    const profileData = userIds.length > 0 ? await supabaseFetch(`profiles?id=in.(${userIds.join(',')})&select=id,name`) : [];
-    document.getElementById('recent-activities-table').innerHTML = activities.slice(0, 15).map(a => {
-      const p = profileData.find(x => x.id === a.user_id);
-      const tagClass = a.type === 'Running' ? 'tag-run' : a.type === 'Cycling' ? 'tag-cyc' : 'tag-walk';
-      return `<tr><td><strong>${p?.name || 'Athlete'}</strong></td><td><span class="tag ${tagClass}">${a.type}</span></td><td>${a.name || a.type}</td><td style="color:var(--orange);font-weight:700;">${a.distance} km</td><td>${a.duration || '—'}</td><td>${Math.floor(parseFloat(a.distance || 0) * 60)} kcal</td><td style="color:var(--text2);">${a.date || '—'}</td></tr>`;
-    }).join('');
-  } catch (e) { showToast('Error: ' + e.message, 'error'); }
-}
-
-async function loadTokenCount() {
-  try { const t = await supabaseFetch('push_tokens?select=token'); document.getElementById('token-count').textContent = t.length; }
-  catch (e) { document.getElementById('token-count').textContent = '0'; }
-}
-
-async function loadUsers() {
-  const grid = document.getElementById('users-grid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
-  try {
-    const [profiles, tokens, activities] = await Promise.all([
-      supabaseFetch('profiles?select=*&order=updated_at.desc'),
-      supabaseFetch('push_tokens?select=user_id,token'),
-      supabaseFetch('activities?select=user_id,distance,type'),
+      sf('profiles?select=*'),
+      sf('activities?select=*&order=created_at.desc&limit=200'),
+      sf('push_tokens?select=token'),
     ]);
     allProfiles = profiles;
-    allUsers = profiles.map(p => {
-      const userToken = tokens.find(t => t.user_id === p.id);
-      const ua = activities.filter(a => a.user_id === p.id);
-      const totalDist = ua.reduce((s, a) => s + parseFloat(a.distance || 0), 0).toFixed(2);
-      const bmi = p.weight && p.height ? (parseFloat(p.weight) / Math.pow(parseFloat(p.height) / 100, 2)).toFixed(1) : null;
-      return { ...p, hasToken: !!userToken, totalDist, actCount: ua.length, runs: ua.filter(a => a.type === 'Running').length, rides: ua.filter(a => a.type === 'Cycling').length, walks: ua.filter(a => a.type === 'Walking').length, bmi };
+    allActivities = activities;
+    const premium = profiles.filter(p => p.is_premium);
+    const totalDist = activities.reduce((s, a) => s + parseFloat(a.distance || 0), 0).toFixed(1);
+    document.getElementById('s-users').textContent = profiles.length;
+    document.getElementById('s-acts').textContent = activities.length;
+    document.getElementById('s-dist').textContent = totalDist;
+    document.getElementById('s-pro').textContent = premium.length;
+    document.getElementById('s-revenue').textContent = `₹${premium.length * PRICE} revenue`;
+
+    // Recent activities
+    const recent = activities.slice(0, 6);
+    const typeColors = {Running:'var(--orange)',Cycling:'var(--green)',Walking:'var(--blue)'};
+    document.getElementById('dash-recent').innerHTML = recent.length === 0
+      ? '<div class="empty"><div class="empty-icon">🏃</div>No activities yet</div>'
+      : recent.map(a => {
+        const p = profiles.find(u => u.id === a.user_id);
+        return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+          ${avatar(p, 32)}
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;">${a.name || a.type}</div>
+            <div style="font-size:11px;color:var(--text3);">${p?.name || 'Athlete'} · ${a.date}</div>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:${typeColors[a.type]||'var(--orange)'};">${a.distance} km</div>
+        </div>`;
+      }).join('');
+
+    // Breakdown
+    const counts = {Running:0,Cycling:0,Walking:0};
+    activities.forEach(a => { if (counts[a.type] !== undefined) counts[a.type]++; });
+    const total = activities.length || 1;
+    document.getElementById('dash-breakdown').innerHTML = Object.entries(counts).map(([type, cnt]) => {
+      const pct = Math.round(cnt/total*100);
+      const colors = {Running:'var(--orange)',Cycling:'var(--green)',Walking:'var(--blue)'};
+      return `<div style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span>${type}</span><span style="color:${colors[type]};font-weight:700;">${cnt} (${pct}%)</span></div>
+        <div style="height:6px;background:var(--border2);border-radius:4px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:${colors[type]};border-radius:4px;"></div></div>
+      </div>`;
+    }).join('');
+
+    // Recent users
+    document.getElementById('dash-users').innerHTML = profiles.slice(0, 5).map(p => `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+        ${avatar(p, 36)}
+        <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${p.name || 'Athlete'}${proBadge(p.is_premium)}</div><div style="font-size:11px;color:var(--text3);">${p.bio || 'No bio'}</div></div>
+        <div style="font-size:12px;color:var(--text3);">${activities.filter(a=>a.user_id===p.id).length} activities</div>
+      </div>`).join('');
+  } catch(e) { toast('Dashboard error: ' + e.message, 'error'); }
+}
+
+// === ANALYTICS ===
+async function loadAnalytics() {
+  try {
+    const [profiles, activities, tokens] = await Promise.all([
+      sf('profiles?select=id,name,avatar_url,is_premium'),
+      sf('activities?select=*'),
+      sf('push_tokens?select=token'),
+    ]);
+    const avg = activities.length ? (activities.reduce((s,a)=>s+parseFloat(a.distance||0),0)/activities.length).toFixed(2) : '0';
+    const conv = profiles.length ? Math.round(profiles.filter(p=>p.is_premium).length/profiles.length*100)+'%' : '0%';
+    document.getElementById('a-avg-dist').textContent = avg;
+    document.getElementById('a-tokens').textContent = tokens.length;
+    document.getElementById('a-conv').textContent = conv;
+
+    // Type breakdown
+    const counts = {Running:0,Cycling:0,Walking:0};
+    let totalDist = {Running:0,Cycling:0,Walking:0};
+    activities.forEach(a => { if(counts[a.type]!==undefined){counts[a.type]++;totalDist[a.type]+=parseFloat(a.distance||0);} });
+    const typeColors = {Running:'var(--orange)',Cycling:'var(--green)',Walking:'var(--blue)'};
+    document.getElementById('a-types').innerHTML = Object.entries(counts).map(([type,cnt]) => `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="width:10px;height:10px;border-radius:50%;background:${typeColors[type]};flex-shrink:0;"></div>
+        <div style="flex:1;font-size:13px;font-weight:600;">${type}</div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:${typeColors[type]};">${cnt} activities</div><div style="font-size:11px;color:var(--text3);">${totalDist[type].toFixed(1)} km</div></div>
+      </div>`).join('');
+
+    // Top performers
+    const ud = {};
+    activities.forEach(a => { ud[a.user_id] = (ud[a.user_id]||0)+parseFloat(a.distance||0); });
+    const top = Object.entries(ud).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    document.getElementById('a-top').innerHTML = top.map(([uid,dist],i) => {
+      const p = profiles.find(u=>u.id===uid);
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:18px;width:28px;">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]||''}</div>
+        ${avatar(p,32)}
+        <div style="flex:1;font-size:13px;font-weight:600;">${p?.name||'Athlete'}${proBadge(p?.is_premium)}</div>
+        <div style="font-size:14px;font-weight:800;color:var(--orange);">${dist.toFixed(1)} km</div>
+      </div>`;
+    }).join('');
+  } catch(e) { toast('Analytics error: ' + e.message, 'error'); }
+}
+
+// === NOTIFICATIONS ===
+const templates = [
+  { title:"💪 Time to Move!", body:"You haven't logged an activity today. Let's get moving!", screen:"Activity" },
+  { title:"🔥 Keep Your Streak!", body:"Don't break your streak! Log an activity today.", screen:"Activity" },
+  { title:"🏆 Check the Leaderboard", body:"See how you rank against other athletes this week!", screen:"Home" },
+  { title:"👑 Upgrade to Pro", body:"Unlock AI Coach & Pro badge for just ₹19 lifetime!", screen:"Premium" },
+  { title:"📊 Your Stats Await", body:"Check your progress and stats — you're doing great!", screen:"Stats" },
+  { title:"✨ Try AI Coach", body:"Your personal AI fitness coach is ready to help you!", screen:"AIChat" },
+];
+
+function fillTemplate(type) {
+  const map = { workout: templates[0], streak: templates[1], pro: templates[3] };
+  const t = map[type];
+  if (t) { document.getElementById('notif-title').value = t.title; document.getElementById('notif-body').value = t.body; }
+}
+
+function loadSendPage() {
+  document.getElementById('templates-grid').innerHTML = templates.map((t,i) => `
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;cursor:pointer;transition:border-color .15s;" onclick="applyTemplate(${i})" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px;">${t.title}</div>
+      <div style="font-size:11px;color:var(--text3);">${t.body.substring(0,60)}...</div>
+    </div>`).join('');
+}
+
+function applyTemplate(i) {
+  const t = templates[i];
+  document.getElementById('notif-title').value = t.title;
+  document.getElementById('notif-body').value = t.body;
+  document.getElementById('notif-screen').value = t.screen || '';
+}
+
+async function sendNow() {
+  const title = document.getElementById('notif-title').value.trim();
+  const body = document.getElementById('notif-body').value.trim();
+  const screen = document.getElementById('notif-screen').value;
+  if (!title || !body) { toast('Fill in title & message', 'error'); return; }
+  try {
+    const tokens = await sf('push_tokens?select=token');
+    if (!tokens.length) { toast('No push tokens found', 'error'); return; }
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-push-notification`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SERVICE_KEY}` },
+      body: JSON.stringify({ title, body, screen, tokens: tokens.map(t => t.token) })
     });
-    // Populate notif-target dropdown with individual users
-    const targetSelect = document.getElementById('notif-target');
-    targetSelect.innerHTML = '<option value="all">All Users</option>' + allUsers.map(u => `<option value="${u.id}">${u.name || 'Athlete'}</option>`).join('');
+    if (res.ok) { toast(`✅ Sent to ${tokens.length} devices!`); document.getElementById('notif-title').value = ''; document.getElementById('notif-body').value = ''; }
+    else toast('Send failed', 'error');
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+}
+
+async function scheduleNotif() {
+  const title = document.getElementById('sched-title').value.trim();
+  const body = document.getElementById('sched-body').value.trim();
+  const time = document.getElementById('sched-time').value;
+  if (!title || !body || !time) { toast('Fill all fields', 'error'); return; }
+  try {
+    await sf('scheduled_notifications', { method: 'POST', body: JSON.stringify({ title, body, scheduled_at: new Date(time).toISOString(), status: 'pending' }) });
+    toast('✅ Scheduled!');
+    loadScheduled();
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+}
+
+async function loadScheduled() {
+  try {
+    const data = await sf('scheduled_notifications?select=*&order=scheduled_at.asc');
+    const el = document.getElementById('sched-list');
+    if (!data.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🗓</div>No scheduled notifications</div>'; return; }
+    el.innerHTML = `<div class="schedule-list">${data.map(s => `
+      <div class="schedule-item">
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">${s.title}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px;">${s.body}</div>
+        </div>
+        <div class="schedule-time">${new Date(s.scheduled_at).toLocaleString()}</div>
+        <div class="schedule-status ${s.status==='sent'?'status-sent':'status-pending'}">${s.status}</div>
+      </div>`).join('')}</div>`;
+  } catch(e) {}
+}
+
+async function loadHistory() {
+  try {
+    const data = await sf('notifications?select=*&order=created_at.desc&limit=100');
+    const tbody = document.getElementById('history-table');
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="4"><div class="empty"><div class="empty-icon">📋</div>No history</div></td></tr>'; return; }
+    tbody.innerHTML = data.map(n => `<tr>
+      <td><strong>${n.title}</strong></td>
+      <td style="color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${n.body}</td>
+      <td>${n.screen ? `<span class="tag" style="background:var(--blue-dim);color:var(--blue);">${n.screen}</span>` : '—'}</td>
+      <td style="color:var(--text3);white-space:nowrap;">${new Date(n.created_at).toLocaleString()}</td>
+    </tr>`).join('');
+  } catch(e) {}
+}
+
+// === USERS ===
+async function loadUsers() {
+  try {
+    const [profiles, tokens, activities] = await Promise.all([
+      sf('profiles?select=*&order=updated_at.desc'),
+      sf('push_tokens?select=user_id'),
+      sf('activities?select=user_id,distance,type'),
+    ]);
+    allUsers = profiles.map(p => ({
+      ...p,
+      hasToken: tokens.some(t => t.user_id === p.id),
+      actCount: activities.filter(a => a.user_id === p.id).length,
+      totalDist: activities.filter(a=>a.user_id===p.id).reduce((s,a)=>s+parseFloat(a.distance||0),0).toFixed(1),
+    }));
     renderUsers(allUsers);
-  } catch (e) { grid.innerHTML = `<div class="empty">Error: ${e.message}</div>`; }
+  } catch(e) { toast('Users error: ' + e.message, 'error'); }
 }
 
 function renderUsers(users) {
   const grid = document.getElementById('users-grid');
-  if (users.length === 0) { grid.innerHTML = '<div class="empty"><div class="empty-icon">👥</div>No users found</div>'; return; }
+  if (!users.length) { grid.innerHTML = '<div class="empty"><div class="empty-icon">👥</div>No users found</div>'; return; }
   grid.innerHTML = users.map(p => {
-    const avatarHtml = p.avatar_url
-      ? `<img src="${p.avatar_url}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--orange);flex-shrink:0;" onerror="this.outerHTML='<div class=user-avatar>${(p.name||'A').charAt(0).toUpperCase()}</div>'" />`
-      : `<div class="user-avatar">${(p.name||'A').charAt(0).toUpperCase()}</div>`;
-    return `<div class="user-row">
-      ${avatarHtml}
+    const bmi = p.weight && p.height ? (parseFloat(p.weight)/Math.pow(parseFloat(p.height)/100,2)).toFixed(1) : '—';
+    return `<div class="user-card">
+      <div class="user-avatar">${p.avatar_url ? `<img src="${p.avatar_url}"/>` : (p.name||'A').charAt(0).toUpperCase()}</div>
       <div class="user-info">
-        <div class="user-name">${p.name || 'Athlete'}</div>
-        <div style="color:var(--text3);font-size:11px;">${p.bio || 'No bio'}</div>
-        ${p.hasToken ? `<div class="user-token">✅ Push enabled</div>` : `<div class="user-no-token">❌ No push token</div>`}
+        <div class="user-name">${p.name||'Athlete'}${proBadge(p.is_premium)}</div>
+        <div class="user-email">${p.bio||'No bio'}</div>
+        <div class="user-meta">${p.hasToken?'✅ Push enabled':'❌ No push'} · Age ${p.age||'—'} · BMI ${bmi}</div>
       </div>
       <div class="user-stats">
         <div class="user-stat"><div class="user-stat-value">${p.actCount}</div><div class="user-stat-label">Activities</div></div>
         <div class="user-stat"><div class="user-stat-value">${p.totalDist}</div><div class="user-stat-label">km</div></div>
-        ${p.bmi ? `<div class="user-stat"><div class="user-stat-value" style="font-size:13px;">${p.bmi}</div><div class="user-stat-label">BMI</div></div>` : ''}
+        <div class="user-stat"><div class="user-stat-value">${p.weight||'—'}</div><div class="user-stat-label">kg</div></div>
       </div>
-      <button onclick="openUserModal('${p.id}')" style="padding:6px 14px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">View</button>
     </div>`;
   }).join('');
 }
@@ -545,472 +802,235 @@ function filterUsers() {
   renderUsers(allUsers.filter(u => (u.name||'').toLowerCase().includes(q) || (u.bio||'').toLowerCase().includes(q)));
 }
 
-function openUserModal(userId) {
-  const p = allUsers.find(u => u.id === userId);
-  if (!p) return;
-  const avatarHtml = p.avatar_url
-    ? `<img src="${p.avatar_url}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid var(--orange);" />`
-    : `<div style="width:64px;height:64px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;">${(p.name||'A').charAt(0).toUpperCase()}</div>`;
-  document.getElementById('user-modal-content').innerHTML = `
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
-      ${avatarHtml}
-      <div>
-        <div style="font-size:18px;font-weight:700;">${p.name||'Athlete'}</div>
-        <div style="color:var(--text2);font-size:13px;margin-top:4px;">${p.bio||'No bio yet'}</div>
-        <div style="margin-top:6px;">${p.hasToken ? '<span style="color:var(--green);font-size:12px;">✅ Push notifications enabled</span>' : '<span style="color:var(--text3);font-size:12px;">❌ No push token</span>'}</div>
-      </div>
-    </div>
-    <div class="profile-stats-grid">
-      <div class="profile-stat"><div class="profile-stat-value">${p.actCount}</div><div class="profile-stat-label">Activities</div></div>
-      <div class="profile-stat"><div class="profile-stat-value">${p.totalDist}</div><div class="profile-stat-label">Total km</div></div>
-      <div class="profile-stat"><div class="profile-stat-value">${p.bmi||'—'}</div><div class="profile-stat-label">BMI</div></div>
-      <div class="profile-stat"><div class="profile-stat-value" style="color:#FF6B35;">${p.runs}</div><div class="profile-stat-label">Runs</div></div>
-      <div class="profile-stat"><div class="profile-stat-value" style="color:#4CAF50;">${p.rides}</div><div class="profile-stat-label">Rides</div></div>
-      <div class="profile-stat"><div class="profile-stat-value" style="color:#2196F3;">${p.walks}</div><div class="profile-stat-label">Walks</div></div>
-    </div>
-    <div class="profile-info-row"><span class="profile-info-label">Age</span><span class="profile-info-value">${p.age||'—'} yrs</span></div>
-    <div class="profile-info-row"><span class="profile-info-label">Weight</span><span class="profile-info-value">${p.weight||'—'} kg</span></div>
-    <div class="profile-info-row"><span class="profile-info-label">Height</span><span class="profile-info-value">${p.height||'—'} cm</span></div>
-    <div class="profile-info-row"><span class="profile-info-label">Weekly Goal</span><span class="profile-info-value">${p.weekly_goal||'—'} km</span></div>
-    <div class="profile-info-row"><span class="profile-info-label">User ID</span><span class="profile-info-value" style="font-size:11px;color:var(--text3);">${p.id}</span></div>`;
-  document.getElementById('user-modal').classList.add('show');
+function buildUserCSV() {
+  let csv = 'Name,Bio,Age,Weight,Height,BMI,Activities,Distance,Push,Pro\n';
+  allUsers.forEach(p => {
+    const bmi = p.weight&&p.height?(parseFloat(p.weight)/Math.pow(parseFloat(p.height)/100,2)).toFixed(1):'';
+    csv += `"${p.name||''}","${p.bio||''}","${p.age||''}","${p.weight||''}","${p.height||''}","${bmi}","${p.actCount}","${p.totalDist}","${p.hasToken?'Yes':'No'}","${p.is_premium?'Yes':'No'}"\n`;
+  });
+  return csv;
 }
 
-function closeUserModal() { document.getElementById('user-modal').classList.remove('show'); }
-
-async function loadAllActivities() {
-  const tbody = document.getElementById('all-activities-table');
-  tbody.innerHTML = '<tr><td colspan="8"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>';
+// === ACTIVITIES ===
+async function loadActivities() {
   try {
-    const activities = await supabaseFetch('activities?select=*&order=created_at.desc&limit=300');
-    allActivities = activities;
-    const userIds = [...new Set(activities.map(a => a.user_id))];
-    const profiles = userIds.length > 0 ? await supabaseFetch(`profiles?id=in.(${userIds.join(',')})&select=id,name`) : [];
-    renderActivities(activities, profiles);
-  } catch (e) { tbody.innerHTML = `<tr><td colspan="8"><div class="empty">Error: ${e.message}</div></td></tr>`; }
+    const [activities, profiles] = await Promise.all([
+      sf('activities?select=*&order=created_at.desc'),
+      sf('profiles?select=id,name,is_premium'),
+    ]);
+    allActivities = activities.map(a => ({ ...a, profile: profiles.find(p => p.id === a.user_id) }));
+    renderActivities(allActivities);
+  } catch(e) { toast('Activities error: ' + e.message, 'error'); }
 }
 
-function renderActivities(activities, profiles) {
-  const tbody = document.getElementById('all-activities-table');
-  if (activities.length === 0) { tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">🏃</div>No activities</div></td></tr>'; return; }
-  tbody.innerHTML = activities.map(a => {
-    const p = profiles ? profiles.find(x => x.id === a.user_id) : allProfiles.find(x => x.id === a.user_id);
-    const tagClass = a.type === 'Running' ? 'tag-run' : a.type === 'Cycling' ? 'tag-cyc' : 'tag-walk';
-    const typeColor = a.type === 'Running' ? '#FF6B35' : a.type === 'Cycling' ? '#4CAF50' : '#2196F3';
-    const cal = Math.floor(parseFloat(a.distance || 0) * 60);
-    const pace = calcPace(a.duration, a.distance);
-    return `<tr><td><strong>${p?.name||'Athlete'}</strong></td><td><span class="tag ${tagClass}">${a.type}</span></td><td>${a.name||a.type}</td><td style="color:${typeColor};font-weight:700;">${a.distance} km</td><td>${a.duration||'—'}</td><td>${pace}</td><td>${cal} kcal</td><td style="color:var(--text2);">${a.date||'—'}</td></tr>`;
+function renderActivities(acts) {
+  const tbody = document.getElementById('acts-table');
+  if (!acts.length) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-icon">🏃</div>No activities</div></td></tr>'; return; }
+  const typeColors = {Running:'var(--orange)',Cycling:'var(--green)',Walking:'var(--blue)'};
+  const tagClass = {Running:'tag-run',Cycling:'tag-cyc',Walking:'tag-wal'};
+  tbody.innerHTML = acts.map(a => {
+    const p = a.profile;
+    const parts = (a.duration||'').split(':');
+    let secs = parts.length===3 ? parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]) : parseInt(parts[0]||0)*60+parseInt(parts[1]||0);
+    const dist = parseFloat(a.distance||0);
+    const pace = secs>0&&dist>0 ? `${Math.floor(secs/60/dist)}:${String(Math.floor((secs/dist)%60)).padStart(2,'0')}` : '—';
+    const cal = Math.floor(dist*60);
+    const hasCoords = a.coords && Array.isArray(a.coords) && a.coords.length > 1;
+    return `<tr>
+      <td><strong>${p?.name||'Athlete'}</strong>${proBadge(p?.is_premium)}</td>
+      <td><span class="tag ${tagClass[a.type]||''}">${a.type}</span></td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a.name||a.type}</td>
+      <td style="color:${typeColors[a.type]||'var(--orange)'};font-weight:700;">${a.distance} km</td>
+      <td>${a.duration||'—'}</td>
+      <td>${pace}</td>
+      <td>${cal} kcal</td>
+      <td style="color:var(--text2);white-space:nowrap;">${a.date||'—'}</td>
+      <td>${hasCoords ? `<button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;" onclick="showRoute('${a.id}')">🗺 View</button>` : '<span style="color:var(--text3);font-size:11px;">No GPS</span>'}</td>
+    </tr>`;
   }).join('');
 }
 
 function filterActivities() {
-  const f = document.getElementById('activity-filter').value;
-  renderActivities(f === 'All' ? allActivities : allActivities.filter(a => a.type === f), null);
+  const f = document.getElementById('act-filter').value;
+  renderActivities(f === 'All' ? allActivities : allActivities.filter(a => a.type === f));
 }
 
-function calcPace(duration, distance) {
-  if (!duration || !distance || parseFloat(distance) === 0) return '—';
-  const parts = duration.split(':');
-  let secs = parts.length === 3 ? parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]) : parseInt(parts[0])*60+parseInt(parts[1]);
-  const pace = secs / parseFloat(distance);
-  return `${Math.floor(pace/60)}:${String(Math.floor(pace%60)).padStart(2,'0')} /km`;
+function buildActivityCSV() {
+  let csv = 'User,Type,Name,Distance,Duration,Date\n';
+  allActivities.forEach(a => { csv += `"${a.profile?.name||''}","${a.type}","${a.name||''}","${a.distance}","${a.duration||''}","${a.date||''}"\n`; });
+  return csv;
 }
 
-async function loadAnalytics() {
-  try {
-    const [profiles, activities] = await Promise.all([supabaseFetch('profiles?select=*'), supabaseFetch('activities?select=*')]);
-    const runs = activities.filter(a => a.type === 'Running').length;
-    const cycles = activities.filter(a => a.type === 'Cycling').length;
-    const walks = activities.filter(a => a.type === 'Walking').length;
-    const total = activities.length || 1;
-    // Donut
-    const canvas = document.getElementById('donut-chart');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0,0,120,120);
-    const data = [{val:runs,color:'#FF6B35',label:'Running'},{val:cycles,color:'#4CAF50',label:'Cycling'},{val:walks,color:'#2196F3',label:'Walking'}];
-    let start = -Math.PI/2;
-    data.forEach(d => {
-      const slice = (d.val/total)*2*Math.PI;
-      ctx.beginPath(); ctx.moveTo(60,60); ctx.arc(60,60,55,start,start+slice);
-      ctx.fillStyle = d.color; ctx.fill(); start += slice;
-    });
-    ctx.beginPath(); ctx.arc(60,60,30,0,2*Math.PI); ctx.fillStyle='#161616'; ctx.fill();
-    ctx.fillStyle='#fff'; ctx.font='bold 14px Inter'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(total, 60, 60);
-    document.getElementById('donut-legend').innerHTML = data.map(d => `<div class="legend-item"><div class="legend-dot" style="background:${d.color};"></div><span>${d.label}: <strong>${d.val}</strong> (${Math.round(d.val/total*100)}%)</span></div>`).join('');
-    // Top 5 users
-    const userDists = {};
-    activities.forEach(a => { userDists[a.user_id]=(userDists[a.user_id]||0)+parseFloat(a.distance||0); });
-    const top5 = Object.entries(userDists).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    const maxD = top5[0] ? top5[0][1] : 1;
-    const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
-    document.getElementById('top-users-chart').innerHTML = top5.map(([uid,dist],i) => {
-      const p = profiles.find(x=>x.id===uid);
-      const pct = Math.round(dist/maxD*100);
-      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><span style="font-size:18px;width:24px;">${medals[i]}</span><span style="width:90px;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p?.name||'Athlete'}</span><div style="flex:1;height:8px;background:var(--border2);border-radius:4px;"><div style="width:${pct}%;height:8px;background:var(--orange);border-radius:4px;"></div></div><span style="font-size:12px;color:var(--orange);font-weight:700;width:55px;text-align:right;">${dist.toFixed(1)} km</span></div>`;
-    }).join('');
-    // Distance bars
-    const runD = activities.filter(a=>a.type==='Running').reduce((s,a)=>s+parseFloat(a.distance||0),0).toFixed(1);
-    const cycD = activities.filter(a=>a.type==='Cycling').reduce((s,a)=>s+parseFloat(a.distance||0),0).toFixed(1);
-    const walkD = activities.filter(a=>a.type==='Walking').reduce((s,a)=>s+parseFloat(a.distance||0),0).toFixed(1);
-    const mxD = Math.max(parseFloat(runD),parseFloat(cycD),parseFloat(walkD),1);
-    document.getElementById('distance-bars').innerHTML = [
-      {label:'Running',dist:runD,color:'#FF6B35'},{label:'Cycling',dist:cycD,color:'#4CAF50'},{label:'Walking',dist:walkD,color:'#2196F3'}
-    ].map(b=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><span style="font-size:11px;color:var(--text2);font-weight:600;">${b.dist}</span><div style="width:100%;height:${Math.round(parseFloat(b.dist)/mxD*100)}%;background:${b.color};border-radius:4px;min-height:4px;"></div><span style="font-size:10px;color:var(--text3);">${b.label}</span></div>`).join('');
-    // Summary
-    const totalDist = activities.reduce((s,a)=>s+parseFloat(a.distance||0),0).toFixed(1);
-    const totalCal = activities.reduce((s,a)=>s+Math.floor(parseFloat(a.distance||0)*60),0);
-    const avgDist = activities.length>0 ? (parseFloat(totalDist)/activities.length).toFixed(2) : 0;
-    const most = runs>=cycles&&runs>=walks?'Running 🏃':cycles>=walks?'Cycling 🚴':'Walking 🚶';
-    document.getElementById('app-summary').innerHTML = [
-      {label:'Total Users',value:profiles.length,color:'var(--orange)'},
-      {label:'Total Activities',value:activities.length,color:'var(--green)'},
-      {label:'Total Distance',value:totalDist+' km',color:'var(--blue)'},
-      {label:'Total Calories',value:totalCal.toLocaleString()+' kcal',color:'var(--red)'},
-      {label:'Avg Distance/Activity',value:avgDist+' km',color:'var(--orange)'},
-      {label:'Most Popular',value:most,color:'var(--yellow)'},
-      {label:'Users with Push',value:document.getElementById('token-count').textContent+' devices',color:'var(--green)'},
-    ].map(s=>`<div class="profile-info-row"><span class="profile-info-label">${s.label}</span><span class="profile-info-value" style="color:${s.color};">${s.value}</span></div>`).join('');
-  } catch(e) { showToast('Analytics error: '+e.message,'error'); }
+// === ROUTE MAP ===
+function showRoute(actId) {
+  const a = allActivities.find(x => x.id === actId);
+  if (!a || !a.coords || a.coords.length < 2) return;
+  const coords = a.coords;
+  const color = {Running:'#FF6B35',Cycling:'#4CAF50',Walking:'#2196F3'}[a.type] || '#FF6B35';
+  const cj = JSON.stringify(coords.map(c=>[c.latitude,c.longitude]));
+  const html = `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script><style>*{margin:0;padding:0}html,body,#map{width:100%;height:100%;background:#0a0a0a}.leaflet-control-attribution,.leaflet-control-zoom{display:none!important}<\/style></head><body><div id="map"></div><script>const map=L.map('map',{zoomControl:false,attributionControl:false});L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);const coords=${cj};const poly=L.polyline(coords,{color:'${color}',weight:5,opacity:.9}).addTo(map);map.fitBounds(poly.getBounds(),{padding:[30,30]});const si=L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:#4CAF50;border:2px solid #fff;box-shadow:0 0 6px rgba(0,0,0,.5);"></div>',iconSize:[12,12],iconAnchor:[6,6]});const ei=L.divIcon({className:'',html:'<div style="width:12px;height:12px;border-radius:50%;background:#F44336;border:2px solid #fff;box-shadow:0 0 6px rgba(0,0,0,.5);"></div>',iconSize:[12,12],iconAnchor:[6,6]});L.marker(coords[0],{icon:si}).addTo(map).bindPopup('Start');L.marker(coords[coords.length-1],{icon:ei}).addTo(map).bindPopup('End');<\/script></body></html>`;
+  document.getElementById('route-modal-title').textContent = `${a.name||a.type} Route`;
+  document.getElementById('route-modal-meta').textContent = `${coords.length} GPS points · ${a.distance} km · ${a.duration||'—'} · ${a.date||'—'}`;
+  document.getElementById('route-iframe').srcdoc = html;
+  document.getElementById('route-modal').classList.add('open');
 }
 
+function closeRouteModal() {
+  document.getElementById('route-modal').classList.remove('open');
+  document.getElementById('route-iframe').srcdoc = '';
+}
+
+// === LEADERBOARD ===
 async function loadLeaderboard(type) {
-  ['run','cyc','walk'].forEach(t => {
-    const b = document.getElementById('lb-'+t);
-    b.style.background='var(--card)'; b.style.borderColor='var(--border2)'; b.style.color='var(--text2)';
-  });
-  const tmap = {Running:'run',Cycling:'cyc',Walking:'walk'};
-  const colors = {Running:'#FF6B35',Cycling:'#4CAF50',Walking:'#2196F3'};
-  const btn = document.getElementById('lb-'+tmap[type]);
-  const rgb = {Running:'255,107,53',Cycling:'76,175,80',Walking:'33,150,243'};
-  btn.style.background=`rgba(${rgb[type]},0.15)`; btn.style.borderColor=colors[type]; btn.style.color=colors[type];
-  const el = document.getElementById('leaderboard-content');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
+  currentLbType = type;
+  ['run','cyc','wal'].forEach(t => document.getElementById('lb-'+t).classList.remove('active'));
+  const map = {Running:'run',Cycling:'cyc',Walking:'wal'};
+  document.getElementById('lb-'+map[type]).classList.add('active');
+  const el = document.getElementById('lb-content');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
     const [activities, profiles] = await Promise.all([
-      supabaseFetch(`activities?type=eq.${type}&select=user_id,distance`),
-      supabaseFetch('profiles?select=id,name,avatar_url,bio,weight,height'),
+      sf('activities?select=user_id,distance&type=eq.'+type),
+      sf('profiles?select=id,name,avatar_url,is_premium,bio'),
     ]);
-    const userDists = {};
-    activities.forEach(a => { userDists[a.user_id]=(userDists[a.user_id]||0)+parseFloat(a.distance||0); });
-    const sorted = Object.entries(userDists).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const ud = {};
+    activities.forEach(a => { ud[a.user_id]=(ud[a.user_id]||0)+parseFloat(a.distance||0); });
+    const sorted = Object.entries(ud).sort((a,b)=>b[1]-a[1]).slice(0,10);
     const medals = ['🥇','🥈','🥉'];
-    el.innerHTML = `<div class="table-card"><table><thead><tr><th>Rank</th><th>User</th><th>Bio</th><th>BMI</th><th>Distance</th></tr></thead><tbody>${
-      sorted.map(([uid,dist],i) => {
+    const typeColor = {Running:'var(--orange)',Cycling:'var(--green)',Walking:'var(--blue)'}[type];
+    el.innerHTML = sorted.length === 0
+      ? '<div class="empty"><div class="empty-icon">🏆</div>No data yet</div>'
+      : sorted.map(([uid,dist],i) => {
         const p = profiles.find(x=>x.id===uid);
-        const bmi = p?.weight&&p?.height ? (parseFloat(p.weight)/Math.pow(parseFloat(p.height)/100,2)).toFixed(1) : '—';
-        const av = p?.avatar_url ? `<img src="${p.avatar_url}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;" />` : `<span style="display:inline-flex;width:32px;height:32px;border-radius:50%;background:${colors[type]};align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px;margin-right:8px;vertical-align:middle;">${(p?.name||'A').charAt(0).toUpperCase()}</span>`;
-        return `<tr><td style="font-size:20px;">${medals[i]||'#'+(i+1)}</td><td>${av}<strong>${p?.name||'Athlete'}</strong></td><td style="color:var(--text2);">${p?.bio||'—'}</td><td>${bmi}</td><td style="color:${colors[type]};font-weight:700;font-size:16px;">${dist.toFixed(2)} km</td></tr>`;
-      }).join('')
-    }</tbody></table></div>`;
-  } catch(e) { el.innerHTML=`<div class="empty">Error: ${e.message}</div>`; }
+        return `<div class="lb-row">
+          <div class="lb-rank">${medals[i]||'#'+(i+1)}</div>
+          <div class="lb-avatar">${p?.avatar_url?`<img src="${p.avatar_url}"/>`:(p?.name||'A').charAt(0).toUpperCase()}</div>
+          <div class="lb-info">
+            <div class="lb-name">${p?.name||'Athlete'}${proBadge(p?.is_premium)}</div>
+            <div class="lb-sub">${p?.bio||type}</div>
+          </div>
+          <div class="lb-dist" style="color:${typeColor};">${dist.toFixed(2)} km</div>
+        </div>`;
+      }).join('');
+  } catch(e) { el.innerHTML = '<div class="empty">Error loading</div>'; }
 }
 
-function loadTemplates() {
-  document.getElementById('templates-grid').innerHTML = templates.map((t,i) => `
-    <div onclick="useTemplate(${i})" style="background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:14px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border2)'">
-      <div style="font-size:20px;margin-bottom:8px;">${t.icon}</div>
-      <div style="font-weight:600;font-size:13px;margin-bottom:4px;">${t.title}</div>
-      <div style="color:var(--text3);font-size:12px;line-height:1.4;">${t.body}</div>
-      <div style="color:var(--orange);font-size:11px;margin-top:6px;">→ ${t.screen}</div>
-    </div>`).join('');
-}
-
-function toggleNotifUrl() {
-  const v = document.getElementById('notif-screen').value;
-  document.getElementById('notif-url').style.display = v === 'url' ? 'block' : 'none';
-}
-
-function toggleSchedUrl() {
-  const v = document.getElementById('sched-screen').value;
-  document.getElementById('sched-url').style.display = v === 'url' ? 'block' : 'none';
-}
-
-async function updateRecipientCount() {
-  const target = document.getElementById('notif-target').value;
-  if (target === 'all') {
-    loadTokenCount();
-  } else {
-    // Single user — count their token
-    try {
-      const tokens = await supabaseFetch(`push_tokens?user_id=eq.${target}&select=token`);
-      document.getElementById('token-count').textContent = tokens.length;
-    } catch(e) { document.getElementById('token-count').textContent = '0'; }
-  }
-}
-
-function useTemplate(i) {
-  const t = templates[i];
-  document.getElementById('notif-title').value = t.title;
-  document.getElementById('notif-body').value = t.body;
-  document.getElementById('notif-screen').value = t.screen;
-  toggleNotifUrl();
-  updatePreview();
-}
-
-function updatePreview() {
-  const screen = document.getElementById('notif-screen').value;
-  const url = document.getElementById('notif-url')?.value;
-  document.getElementById('preview-title').textContent = document.getElementById('notif-title').value || 'Your notification title';
-  document.getElementById('preview-body').textContent = document.getElementById('notif-body').value || 'Your message...';
-  document.getElementById('preview-screen').textContent = screen === 'url' ? (url || 'External URL') : screen || 'Home';
-}
-
-async function sendNotification() {
-  const title = document.getElementById('notif-title').value.trim();
-  const body = document.getElementById('notif-body').value.trim();
-  const screenVal = document.getElementById('notif-screen').value;
-  const urlVal = document.getElementById('notif-url')?.value?.trim();
-  const screen = screenVal === 'url' ? urlVal : screenVal;
-  const target = document.getElementById('notif-target').value;
-  if (!title || !body) { showToast('Please enter title and message', 'error'); return; }
-  if (screenVal === 'url' && !urlVal) { showToast('Please enter a URL', 'error'); return; }
-  const btn = document.getElementById('send-btn');
-  btn.disabled = true; btn.textContent = '⏳ Sending...';
-  try {
-    let tokens;
-    if (target === 'all') {
-      tokens = await supabaseFetch('push_tokens?select=token,user_id');
-    } else {
-      tokens = await supabaseFetch(`push_tokens?user_id=eq.${target}&select=token,user_id`);
-    }
-    const validTokens = tokens.filter(t => t.token && t.token.startsWith('ExponentPushToken'));
-    if (validTokens.length === 0) { showToast('No valid Expo tokens found for this recipient.', 'error'); btn.disabled=false; btn.innerHTML='🚀 Send Now'; return; }
-    const messages = validTokens.map(t => ({ to: t.token, title, body, data: { screen, isUrl: screenVal === 'url' }, sound: 'default', priority: 'high' }));
-    await fetch(`${SUPABASE_URL}/functions/v1/send-push-notification`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SERVICE_KEY}` }, body: JSON.stringify({ messages, title, body, screen }) });
-    const recipientLabel = target === 'all' ? `${validTokens.length} device${validTokens.length!==1?'s':''}` : allUsers.find(u=>u.id===target)?.name || '1 user';
-    notifHistory.unshift({ id: Date.now(), title, body, screen, recipients: validTokens.length, status: 'sent', sentAt: new Date().toLocaleString() });
-    localStorage.setItem('cf_notif_history', JSON.stringify(notifHistory));
-    loadHistory();
-    showToast(`✅ Sent to ${recipientLabel}!`, 'success');
-    document.getElementById('notif-title').value = '';
-    document.getElementById('notif-body').value = '';
-    updatePreview();
-  } catch (e) { showToast('Error: '+e.message, 'error'); }
-  btn.disabled = false; btn.innerHTML = '🚀 Send Now';
-}
-
-async function scheduleNotification() {
-  const title = document.getElementById('sched-title').value.trim();
-  const body = document.getElementById('sched-body').value.trim();
-  const datetime = document.getElementById('sched-datetime').value;
-  if (!title || !body || !datetime) { showToast('Please fill all fields', 'error'); return; }
-  const schedScreenVal = document.getElementById('sched-screen').value;
-  const schedUrlVal = document.getElementById('sched-url')?.value?.trim();
-  const screen = schedScreenVal === 'url' ? schedUrlVal : schedScreenVal;
-  if (schedScreenVal === 'url' && !schedUrlVal) { showToast('Please enter a URL', 'error'); return; }
-  const scheduledAt = new Date(datetime);
-  if (scheduledAt <= new Date()) { showToast('Please select a future time', 'error'); return; }
-  try {
-    await supabaseFetch('scheduled_notifications', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=minimal' },
-      body: JSON.stringify({ title, body, screen, scheduled_at: scheduledAt.toISOString(), status: 'pending' }),
-    });
-    showToast(`✅ Scheduled for ${scheduledAt.toLocaleString()}`, 'success');
-    loadScheduled();
-    document.getElementById('sched-title').value = '';
-    document.getElementById('sched-body').value = '';
-    document.getElementById('sched-datetime').value = '';
-  } catch(e) { showToast('Error: ' + e.message, 'error'); }
-}
-
-async function loadScheduled() {
-  const tbody = document.getElementById('scheduled-table');
-  try {
-    const scheduled = await supabaseFetch('scheduled_notifications?select=*&order=scheduled_at.desc&limit=50');
-    if (!scheduled.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">🗓️</div>No scheduled notifications</div></td></tr>'; return; }
-    tbody.innerHTML = scheduled.map(s => `<tr>
-      <td style="font-weight:600;">${s.title}</td>
-      <td style="color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.body}</td>
-      <td style="color:var(--orange);">${s.screen}</td>
-      <td style="color:var(--text2);">${new Date(s.scheduled_at).toLocaleString()}</td>
-      <td><span class="status-badge ${s.status==='sent'?'status-sent':'status-pending'}">${s.status}</span></td>
-      <td><button onclick="cancelScheduled('${s.id}')" style="padding:4px 10px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);border-radius:6px;color:var(--red);font-size:11px;cursor:pointer;font-family:var(--font);">Cancel</button></td>
-    </tr>`).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty">Error: ${e.message}</div></td></tr>`; }
-}
-
-async function cancelScheduled(id) {
-  try {
-    await supabaseFetch(`scheduled_notifications?id=eq.${id}`, { method: 'DELETE' });
-    loadScheduled(); showToast('Cancelled', 'success');
-  } catch(e) { showToast('Error: ' + e.message, 'error'); }
-}
-
-async function clearAllScheduled() {
-  if (!confirm('Clear all scheduled notifications?')) return;
-  try {
-    await supabaseFetch('scheduled_notifications?status=eq.pending', { method: 'DELETE' });
-    loadScheduled(); showToast('All pending cleared', 'success');
-  } catch(e) { showToast('Error: ' + e.message, 'error'); }
-}
-
-function loadHistory() {
-  const tbody = document.getElementById('history-table');
-  if (!notifHistory.length) { tbody.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-icon">📋</div>No notifications sent yet</div></td></tr>'; return; }
-  tbody.innerHTML = notifHistory.map(n=>`<tr><td style="font-weight:600;">${n.title}</td><td style="color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${n.body}</td><td style="color:var(--orange);">${n.screen}</td><td>${n.recipients} devices</td><td><span class="status-badge status-${n.status}">${n.status}</span></td><td style="color:var(--text2);">${n.sentAt}</td></tr>`).join('');
-}
-
-function clearHistory() {
-  if (!confirm('Clear all notification history?')) return;
-  notifHistory=[]; localStorage.removeItem('cf_notif_history'); loadHistory(); showToast('Cleared','success');
-}
-
-function downloadCSV(csv, filename) {
-  const blob = new Blob([csv],{type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href=url; a.download=filename; a.click();
-}
-
-async function downloadUserReport() {
-  try {
-    let csv = 'Name,Bio,Age,Weight(kg),Height(cm),BMI,Weekly Goal(km),Activities,Total KM,Runs,Rides,Walks,Push Token\n';
-    allUsers.forEach(p => {
-      csv += `"${p.name||''}","${p.bio||''}","${p.age||''}","${p.weight||''}","${p.height||''}","${p.bmi||''}","${p.weekly_goal||''}","${p.actCount}","${p.totalDist}","${p.runs}","${p.rides}","${p.walks}","${p.hasToken?'Yes':'No'}"\n`;
-    });
-    downloadCSV(csv, `cf-users-${new Date().toISOString().split('T')[0]}.csv`);
-    showToast('User report downloaded!','success');
-  } catch(e) { showToast('Error: '+e.message,'error'); }
-}
-
-async function downloadActivityReport() {
-  try {
-    let csv = 'User ID,Type,Name,Distance(km),Duration,Pace,Calories,Date\n';
-    allActivities.forEach(a => {
-      const p = allProfiles.find(x=>x.id===a.user_id);
-      csv += `"${p?.name||a.user_id}","${a.type}","${a.name||''}","${a.distance}","${a.duration||''}","${calcPace(a.duration,a.distance)}","${Math.floor(parseFloat(a.distance||0)*60)}","${a.date||''}"\n`;
-    });
-    downloadCSV(csv, `cf-activities-${new Date().toISOString().split('T')[0]}.csv`);
-    showToast('Activity report downloaded!','success');
-  } catch(e) { showToast('Error: '+e.message,'error'); }
-}
-
-function showToast(msg, type='success') {
-  const t = document.getElementById('toast');
-  document.getElementById('toast-icon').textContent = type==='success'?'✅':'❌';
-  document.getElementById('toast-msg').textContent = msg;
-  t.className=`toast ${type} show`;
-  setTimeout(()=>{ t.className=`toast ${type}`; }, 3500);
-}
-
-async function loadPremiumUsers() {
-  const grid = document.getElementById('premium-users-grid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
+// === PREMIUM ===
+async function loadPremium() {
   try {
     const [profiles, activities] = await Promise.all([
-      supabaseFetch('profiles?select=*&order=premium_purchased_at.desc&is_premium=eq.true'),
-      supabaseFetch('activities?select=user_id,distance,type'),
+      sf('profiles?select=*'),
+      sf('activities?select=user_id,distance,type'),
     ]);
-    const totalUsers = (await supabaseFetch('profiles?select=id')).length;
-    document.getElementById('stat-premium-count').textContent = profiles.length;
-    document.getElementById('stat-premium-revenue').textContent = '₹' + (profiles.length * 19).toLocaleString();
-    document.getElementById('stat-premium-rate').textContent = totalUsers > 0 ? Math.round(profiles.length / totalUsers * 100) + '%' : '0%';
-    if (profiles.length === 0) { grid.innerHTML = '<div class="empty"><div class="empty-icon">👑</div>No premium users yet</div>'; return; }
-    grid.innerHTML = profiles.map(p => {
-      const ua = activities.filter(a => a.user_id === p.id);
-      const totalDist = ua.reduce((s, a) => s + parseFloat(a.distance || 0), 0).toFixed(2);
-      const bmi = p.weight && p.height ? (parseFloat(p.weight) / Math.pow(parseFloat(p.height) / 100, 2)).toFixed(1) : '—';
-      const avatarHtml = p.avatar_url ? `<img src="${p.avatar_url}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid #FFD700;flex-shrink:0;" />` : `<div class="user-avatar" style="border:2px solid #FFD700;background:#FFD70022;color:#FFD700;">${(p.name||'A').charAt(0).toUpperCase()}</div>`;
-      const purchasedAt = p.premium_purchased_at ? new Date(p.premium_purchased_at).toLocaleDateString() : '—';
-      return `<div class="user-row" style="border-color:#FFD70033;">
-        ${avatarHtml}
+    const premium = profiles.filter(p => p.is_premium);
+    allPremium = premium;
+    document.getElementById('p-count').textContent = premium.length;
+    document.getElementById('p-revenue').textContent = '₹' + (premium.length * PRICE).toLocaleString();
+    document.getElementById('p-rate').textContent = profiles.length ? Math.round(premium.length/profiles.length*100)+'%' : '0%';
+    const grid = document.getElementById('premium-grid');
+    if (!premium.length) { grid.innerHTML = '<div class="empty"><div class="empty-icon">👑</div>No premium users yet</div>'; return; }
+    grid.innerHTML = premium.map(p => {
+      const ua = activities.filter(a=>a.user_id===p.id);
+      const dist = ua.reduce((s,a)=>s+parseFloat(a.distance||0),0).toFixed(1);
+      const bmi = p.weight&&p.height?(parseFloat(p.weight)/Math.pow(parseFloat(p.height)/100,2)).toFixed(1):'—';
+      const since = p.premium_purchased_at ? new Date(p.premium_purchased_at).toLocaleDateString() : '—';
+      return `<div class="premium-card">
+        <div class="user-avatar" style="border:2px solid var(--gold);">${p.avatar_url?`<img src="${p.avatar_url}"/>`:(p.name||'A').charAt(0).toUpperCase()}</div>
         <div class="user-info">
-          <div style="display:flex;align-items:center;gap:6px;"><div class="user-name">${p.name||'Athlete'}</div><span style="color:#FFD700;font-size:12px;">👑 Pro</span></div>
-          <div style="color:var(--text3);font-size:11px;">${p.bio||'No bio'}</div>
-          <div style="color:#888;font-size:11px;margin-top:2px;">Joined Pro: ${purchasedAt}</div>
+          <div class="user-name">${p.name||'Athlete'} <span class="tag tag-pro">👑 Pro</span></div>
+          <div class="user-email">${p.bio||'No bio'}</div>
+          <div class="user-meta">Pro since: ${since} · Age ${p.age||'—'} · BMI ${bmi}</div>
         </div>
         <div class="user-stats">
           <div class="user-stat"><div class="user-stat-value">${ua.length}</div><div class="user-stat-label">Activities</div></div>
-          <div class="user-stat"><div class="user-stat-value">${totalDist}</div><div class="user-stat-label">km</div></div>
-          <div class="user-stat"><div class="user-stat-value" style="font-size:13px;">${bmi}</div><div class="user-stat-label">BMI</div></div>
+          <div class="user-stat"><div class="user-stat-value">${dist}</div><div class="user-stat-label">km</div></div>
+          <div class="user-stat"><div class="user-stat-value" style="color:var(--gold);">₹${PRICE}</div><div class="user-stat-label">Paid</div></div>
         </div>
       </div>`;
     }).join('');
-  } catch(e) { grid.innerHTML = `<div class="empty">Error: ${e.message}</div>`; }
+  } catch(e) { toast('Premium error: ' + e.message, 'error'); }
 }
 
-let allChats = [];
+function buildPremiumCSV() {
+  let csv = 'Name,Bio,Age,Weight,Height,Pro Since\n';
+  allPremium.forEach(p => { csv += `"${p.name||''}","${p.bio||''}","${p.age||''}","${p.weight||''}","${p.height||''}","${p.premium_purchased_at||''}"\n`; });
+  return csv;
+}
+
+// === AI CHATS ===
 async function loadAIChats() {
-  const el = document.getElementById('aichats-content');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
   try {
     const [chats, profiles] = await Promise.all([
-      supabaseFetch('chat_history?select=*&order=updated_at.desc'),
-      supabaseFetch('profiles?select=id,name,avatar_url,is_premium'),
+      sf('chat_history?select=*&order=updated_at.desc'),
+      sf('profiles?select=id,name,avatar_url,is_premium'),
     ]);
-    allChats = chats.map(c => ({ ...c, profile: profiles.find(p => p.id === c.user_id) }));
+    allChats = chats.map(c => ({ ...c, profile: profiles.find(p=>p.id===c.user_id) }));
     renderChats(allChats);
-  } catch(e) { el.innerHTML = `<div class="empty">Error: ${e.message}</div>`; }
+  } catch(e) { toast('AI Chats error: ' + e.message, 'error'); }
 }
 
 function renderChats(chats) {
-  const el = document.getElementById('aichats-content');
-  if (chats.length === 0) { el.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No AI chats yet</div>'; return; }
-  el.innerHTML = chats.map(c => {
-    const msgs = c.messages || [];
-    const userMsgs = msgs.filter(m => m.role === 'user').length;
-    const aiMsgs = msgs.filter(m => m.role === 'assistant').length;
-    const lastMsg = msgs[msgs.length - 1];
+  const el = document.getElementById('chats-grid');
+  if (!chats.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">✨</div>No AI chats yet</div>'; return; }
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;">${chats.map(c => {
+    const msgs = c.messages||[];
+    const userMsgs = msgs.filter(m=>m.role==='user').length;
+    const aiMsgs = msgs.filter(m=>m.role==='assistant').length;
     const p = c.profile;
-    const avatarHtml = p?.avatar_url ? `<img src="${p.avatar_url}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;" />` : `<div class="user-avatar">${(p?.name||'A').charAt(0).toUpperCase()}</div>`;
-    return `<div class="user-row" style="flex-direction:column;align-items:stretch;gap:12px;">
+    const chatId = 'chat-' + c.id.replace(/-/g,'');
+    return `<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
       <div style="display:flex;align-items:center;gap:12px;">
-        ${avatarHtml}
+        <div class="user-avatar">${p?.avatar_url?`<img src="${p.avatar_url}"/>`:(p?.name||'A').charAt(0).toUpperCase()}</div>
         <div style="flex:1;">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-weight:600;font-size:14px;">${p?.name||'Athlete'}</span>
-            ${p?.is_premium ? '<span style="color:#FFD700;font-size:12px;">👑 Pro</span>' : ''}
-          </div>
-          <div style="color:var(--text3);font-size:11px;">Updated: ${new Date(c.updated_at).toLocaleString()}</div>
+          <div style="font-size:14px;font-weight:700;">${p?.name||'Unknown'}${proBadge(p?.is_premium)}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Updated: ${new Date(c.updated_at).toLocaleString()}</div>
         </div>
-        <div style="display:flex;gap:16px;text-align:center;">
-          <div><div style="color:var(--orange);font-weight:700;">${userMsgs}</div><div style="color:var(--text3);font-size:10px;">Messages</div></div>
-          <div><div style="color:var(--green);font-weight:700;">${aiMsgs}</div><div style="color:var(--text3);font-size:10px;">AI Replies</div></div>
+        <div style="display:flex;gap:20px;margin-right:12px;text-align:center;">
+          <div><div style="font-size:15px;font-weight:700;color:var(--orange);">${userMsgs}</div><div style="font-size:10px;color:var(--text3);">Messages</div></div>
+          <div><div style="font-size:15px;font-weight:700;color:var(--green);">${aiMsgs}</div><div style="font-size:10px;color:var(--text3);">AI Replies</div></div>
         </div>
-        <button onclick="toggleChat('${c.id}')" style="padding:6px 12px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">View</button>
+        <button class="btn btn-secondary" style="padding:6px 14px;font-size:12px;" onclick="toggleChat('${chatId}')">View Chat</button>
       </div>
-      <div id="chat-${c.id}" style="display:none;border-top:1px solid var(--border);padding-top:12px;max-height:300px;overflow-y:auto;">
-        ${msgs.map(m => `<div style="margin-bottom:8px;display:flex;justify-content:${m.role==='user'?'flex-end':'flex-start'};">
-          <div style="max-width:75%;padding:8px 12px;border-radius:12px;font-size:13px;background:${m.role==='user'?'var(--orange)':'var(--card2)'};color:${m.role==='user'?'#fff':'var(--text)'};border:1px solid ${m.role==='user'?'transparent':'var(--border2)'};">
-            ${m.content}
-          </div>
-        </div>`).join('')}
+      <div id="${chatId}" style="display:none;border-top:1px solid var(--border);margin-top:12px;padding-top:12px;">
+        <div class="chat-wrap">${msgs.map(m=>`<div class="chat-msg ${m.role==='user'?'user':'ai'}"><div class="chat-bubble">${m.content}</div></div>`).join('')}</div>
       </div>
     </div>`;
-  }).join('');
+  }).join('')}</div>`;
 }
 
 function toggleChat(id) {
-  const el = document.getElementById('chat-' + id);
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display==='none'?'block':'none';
 }
 
 function filterChats() {
   const q = document.getElementById('chat-search').value.toLowerCase();
-  renderChats(allChats.filter(c => (c.profile?.name||'').toLowerCase().includes(q)));
+  renderChats(allChats.filter(c=>(c.profile?.name||'').toLowerCase().includes(q)));
 }
 
-async function downloadPremiumReport() {
-  try {
-    const profiles = await supabaseFetch('profiles?select=*&is_premium=eq.true');
-    let csv = 'Name,Bio,Age,Weight,Height,BMI,Weekly Goal,Premium Since\n';
-    profiles.forEach(p => {
-      const bmi = p.weight && p.height ? (parseFloat(p.weight) / Math.pow(parseFloat(p.height)/100,2)).toFixed(1) : '';
-      csv += `"${p.name||''}","${p.bio||''}","${p.age||''}","${p.weight||''}","${p.height||''}","${bmi}","${p.weekly_goal||''}","${p.premium_purchased_at||''}"
-`;
-    });
-    downloadCSV(csv, `cf-premium-users-${new Date().toISOString().split('T')[0]}.csv`);
-    showToast('Premium report downloaded!', 'success');
-  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+// === CSV ===
+function downloadCSV(csv, filename) {
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  toast('✅ Downloaded: ' + filename);
 }
 
+// === INIT ===
 document.addEventListener('keydown', e => {
-  if (e.key==='Enter' && document.getElementById('login-screen').style.display!=='none') handleLogin();
-  if (e.key==='Escape') closeUserModal();
+  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') handleLogin();
+  if (e.key === 'Escape') closeRouteModal();
 });
-document.getElementById('user-modal').addEventListener('click', e => { if (e.target===e.currentTarget) closeUserModal(); });
+
+// Init send page templates
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(loadSendPage, 100);
+});
+
+window.addEventListener('click', e => {
+  if (e.target === document.getElementById('route-modal')) closeRouteModal();
+});
 </script>
 </body>
 </html>
