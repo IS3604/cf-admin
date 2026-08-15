@@ -206,6 +206,13 @@ textarea.form-input{resize:vertical;min-height:80px;}
 /* Revenue card */
 .revenue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
 
+/* Banner grid */
+.banner-item{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
+.banner-item-img{width:100%;height:140px;object-fit:cover;display:block;}
+.banner-item-body{padding:14px;}
+.banner-item-footer{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.banner-url{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+
 /* Responsive */
 @media(max-width:900px){
   .sidebar{width:60px;}
@@ -270,6 +277,8 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div class="nav-item" onclick="showPage('users',this)"><span class="nav-icon">👥</span><span>Users</span></div>
       <div class="nav-item" onclick="showPage('activities',this)"><span class="nav-icon">🏃</span><span>Activities</span></div>
       <div class="nav-item" onclick="showPage('leaderboard',this)"><span class="nav-icon">🏆</span><span>Leaderboard</span></div>
+      <div class="nav-section">Content</div>
+      <div class="nav-item" onclick="showPage('banners',this)"><span class="nav-icon">🖼</span><span>Banners</span></div>
       <div class="nav-section">Monetization</div>
       <div class="nav-item" onclick="showPage('premium',this)"><span class="nav-icon">👑</span><span>Premium</span></div>
       <div class="nav-item" onclick="showPage('aichats',this)"><span class="nav-icon">✨</span><span>AI Chats</span></div>
@@ -472,6 +481,68 @@ textarea.form-input{resize:vertical;min-height:80px;}
         <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Conversion</div><div class="stat-card-icon" style="background:var(--blue-dim)">📊</div></div><div class="stat-card-value" id="p-rate" style="color:var(--blue)">—</div><div class="stat-card-sub">Free → Pro rate</div></div>
       </div>
       <div class="user-grid" id="premium-grid"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- BANNERS -->
+    <div class="page" id="page-banners">
+      <div class="topbar">
+        <div><div class="page-title">Banners</div><div class="page-sub">Manage home screen slideshow banners</div></div>
+        <button class="btn btn-secondary" onclick="loadBanners()">↻ Refresh</button>
+      </div>
+
+      <!-- Upload Card -->
+      <div class="notif-form" style="margin-bottom:20px;">
+        <div class="notif-form-title">🖼 Add New Banner</div>
+        <!-- Drag & Drop Zone -->
+        <div id="drop-zone" style="border:2px dashed var(--border2);border-radius:var(--radius);padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px;background:var(--bg2);"
+          ondragover="event.preventDefault();this.style.borderColor='var(--orange)';this.style.background='var(--orange-dim)';"
+          ondragleave="this.style.borderColor='var(--border2)';this.style.background='var(--bg2)';"
+          ondrop="handleDrop(event)"
+          onclick="document.getElementById('banner-file-input').click()">
+          <div id="drop-icon" style="font-size:36px;margin-bottom:10px;">🖼</div>
+          <div id="drop-text" style="color:var(--text2);font-size:14px;font-weight:600;">Drag & drop image here</div>
+          <div style="color:var(--text3);font-size:12px;margin-top:6px;">or click to browse · PNG, JPG · Max 5MB</div>
+          <input type="file" id="banner-file-input" accept="image/*" style="display:none;" onchange="handleFileSelect(this)"/>
+        </div>
+        <!-- Preview -->
+        <div id="banner-preview" style="display:none;margin-bottom:16px;position:relative;">
+          <img id="banner-preview-img" style="width:100%;height:160px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border2);" />
+          <button onclick="clearBannerPreview()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);border:none;color:#fff;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;">✕ Remove</button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Link URL</label>
+            <input class="form-input" id="banner-link" placeholder="https://is3604.github.io/CustomFitness.web/" value="https://is3604.github.io/CustomFitness.web/"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sort Order</label>
+            <input class="form-input" type="number" id="banner-order" placeholder="1" value="1"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="banner-status">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="uploadBanner()" id="banner-upload-btn" style="margin-top:8px;">⬆ Upload & Add Banner</button>
+        <div id="banner-upload-progress" style="display:none;margin-top:12px;">
+          <div style="background:var(--border2);border-radius:4px;height:6px;">
+            <div id="banner-progress-bar" style="background:var(--orange);height:6px;border-radius:4px;width:0%;transition:width .3s;"></div>
+          </div>
+          <div id="banner-progress-text" style="color:var(--text3);font-size:12px;margin-top:6px;text-align:center;">Uploading...</div>
+        </div>
+      </div>
+
+      <!-- Banner List -->
+      <div class="section-card">
+        <div class="section-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Current Banners</span>
+          <span id="banner-count" style="color:var(--orange);font-size:12px;font-weight:700;"></span>
+        </div>
+        <div id="banners-grid"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
     </div>
 
     <!-- AI CHATS -->
@@ -1015,6 +1086,174 @@ function downloadCSV(csv, filename) {
   const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
   URL.revokeObjectURL(url);
   toast('✅ Downloaded: ' + filename);
+}
+
+// === BANNERS ===
+let bannerFile = null;
+
+function handleDrop(e) {
+  e.preventDefault();
+  const zone = document.getElementById('drop-zone');
+  zone.style.borderColor = 'var(--border2)';
+  zone.style.background = 'var(--bg2)';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    bannerFile = file;
+    previewBanner(file);
+  } else {
+    toast('Please drop an image file', 'error');
+  }
+}
+
+function handleFileSelect(input) {
+  const file = input.files[0];
+  if (file) { bannerFile = file; previewBanner(file); }
+}
+
+function previewBanner(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('banner-preview-img').src = e.target.result;
+    document.getElementById('banner-preview').style.display = 'block';
+    document.getElementById('drop-text').textContent = file.name;
+    document.getElementById('drop-icon').textContent = '✅';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearBannerPreview() {
+  bannerFile = null;
+  document.getElementById('banner-preview').style.display = 'none';
+  document.getElementById('banner-file-input').value = '';
+  document.getElementById('drop-text').textContent = 'Drag & drop image here';
+  document.getElementById('drop-icon').textContent = '🖼';
+}
+
+async function uploadBanner() {
+  if (!bannerFile) { toast('Please select an image first', 'error'); return; }
+  const link = document.getElementById('banner-link').value.trim();
+  const order = parseInt(document.getElementById('banner-order').value) || 1;
+  const is_active = document.getElementById('banner-status').value === 'true';
+  if (!link) { toast('Please enter a link URL', 'error'); return; }
+
+  const btn = document.getElementById('banner-upload-btn');
+  btn.disabled = true;
+  btn.textContent = 'Uploading...';
+  document.getElementById('banner-upload-progress').style.display = 'block';
+  document.getElementById('banner-progress-bar').style.width = '30%';
+  document.getElementById('banner-progress-text').textContent = 'Uploading image...';
+
+  try {
+    // Upload image to Supabase Storage
+    const fileName = `banner_${Date.now()}_${bannerFile.name.replace(/\s+/g, '_')}`;
+    const arrayBuffer = await bannerFile.arrayBuffer();
+
+    document.getElementById('banner-progress-bar').style.width = '60%';
+
+    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/banners/${fileName}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SERVICE_KEY,
+        'Authorization': `Bearer ${SERVICE_KEY}`,
+        'Content-Type': bannerFile.type,
+        'x-upsert': 'true',
+      },
+      body: arrayBuffer,
+    });
+
+    if (!uploadRes.ok) {
+      const err = await uploadRes.json();
+      throw new Error(err.message || 'Upload failed');
+    }
+
+    document.getElementById('banner-progress-bar').style.width = '80%';
+    document.getElementById('banner-progress-text').textContent = 'Saving banner...';
+
+    const image_url = `${SUPABASE_URL}/storage/v1/object/public/banners/${fileName}`;
+
+    // Insert into banners table
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/banners`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SERVICE_KEY,
+        'Authorization': `Bearer ${SERVICE_KEY}`,
+        'Prefer': 'return=representation',
+      },
+      body: JSON.stringify({ image_url, link_url: link, sort_order: order, is_active }),
+    });
+
+    document.getElementById('banner-progress-bar').style.width = '100%';
+
+    if (res.ok) {
+      toast('✅ Banner uploaded successfully!', 'success');
+      clearBannerPreview();
+      document.getElementById('banner-link').value = 'https://is3604.github.io/CustomFitness.web/';
+      document.getElementById('banner-order').value = '1';
+      loadBanners();
+    } else {
+      throw new Error('Failed to save banner');
+    }
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⬆ Upload & Add Banner';
+  document.getElementById('banner-upload-progress').style.display = 'none';
+  document.getElementById('banner-progress-bar').style.width = '0%';
+}
+
+async function loadBanners() {
+  const grid = document.getElementById('banners-grid');
+  const count = document.getElementById('banner-count');
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const data = await sf('banners?select=*&order=sort_order.asc');
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<div class="empty"><div class="empty-icon">🖼</div>No banners yet. Upload one above.</div>';
+      count.textContent = '';
+      return;
+    }
+    count.textContent = `${data.length} banner${data.length > 1 ? 's' : ''}`;
+    grid.innerHTML = data.map(b => `
+      <div class="banner-item">
+        <img class="banner-item-img" src="${b.image_url}" onerror="this.style.background='#2A2A2A';this.style.height='60px';" />
+        <div class="banner-item-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span class="tag ${b.is_active ? 'tag-run' : ''}" style="${!b.is_active ? 'background:rgba(85,85,85,0.2);color:#555;' : ''}">${b.is_active ? '● ACTIVE' : '● INACTIVE'}</span>
+            <span style="color:var(--text3);font-size:11px;">Order: ${b.sort_order}</span>
+          </div>
+          <div class="banner-url">🔗 ${b.link_url}</div>
+          <div class="banner-url">🖼 ${b.image_url}</div>
+          <div class="banner-item-footer">
+            <button class="btn btn-secondary" style="padding:6px 14px;font-size:12px;" onclick="toggleBanner('${b.id}',${b.is_active})">${b.is_active ? '⏸ Deactivate' : '▶ Activate'}</button>
+            <button class="btn" style="padding:6px 14px;font-size:12px;background:var(--red-dim);color:var(--red);border:1px solid rgba(244,67,54,0.3);" onclick="deleteBanner('${b.id}')">🗑 Delete</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) { grid.innerHTML = '<div class="empty">Error loading banners</div>'; }
+}
+
+async function toggleBanner(id, current) {
+  await fetch(`${SUPABASE_URL}/rest/v1/banners?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'apikey': SERVICE_KEY, 'Authorization': `Bearer ${SERVICE_KEY}` },
+    body: JSON.stringify({ is_active: !current }),
+  });
+  toast(`Banner ${!current ? 'activated' : 'deactivated'}`, 'success');
+  loadBanners();
+}
+
+async function deleteBanner(id) {
+  if (!confirm('Delete this banner? This cannot be undone.')) return;
+  await fetch(`${SUPABASE_URL}/rest/v1/banners?id=eq.${id}`, {
+    method: 'DELETE',
+    headers: { 'apikey': SERVICE_KEY, 'Authorization': `Bearer ${SERVICE_KEY}` },
+  });
+  toast('Banner deleted', 'success');
+  loadBanners();
 }
 
 // === INIT ===
