@@ -206,6 +206,13 @@ textarea.form-input{resize:vertical;min-height:80px;}
 /* Revenue card */
 .revenue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
 
+/* Feature flags toggle */
+.feature-toggle-row { display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--border); }
+.feature-toggle-row:last-child { border-bottom:none; }
+
+/* Badge color preview */
+.badge-color-preview { width:20px;height:20px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:6px; }
+
 /* Banner grid */
 .banner-item{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
 .banner-item-img{width:100%;height:140px;object-fit:cover;display:block;}
@@ -279,6 +286,11 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div class="nav-item" onclick="showPage('leaderboard',this)"><span class="nav-icon">🏆</span><span>Leaderboard</span></div>
       <div class="nav-section">Content</div>
       <div class="nav-item" onclick="showPage('banners',this)"><span class="nav-icon">🖼</span><span>Banners</span></div>
+      <div class="nav-item" onclick="showPage('announcements',this)"><span class="nav-icon">📢</span><span>Announcements</span></div>
+      <div class="nav-section">Gamification</div>
+      <div class="nav-item" onclick="showPage('badges',this)"><span class="nav-icon">🎖</span><span>Badges</span></div>
+      <div class="nav-section">Settings</div>
+      <div class="nav-item" onclick="showPage('features',this)"><span class="nav-icon">⚙️</span><span>Feature Flags</span></div>
       <div class="nav-section">Monetization</div>
       <div class="nav-item" onclick="showPage('premium',this)"><span class="nav-icon">👑</span><span>Premium</span></div>
       <div class="nav-item" onclick="showPage('aichats',this)"><span class="nav-icon">✨</span><span>AI Chats</span></div>
@@ -483,6 +495,129 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div class="user-grid" id="premium-grid"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
+    <!-- ANNOUNCEMENTS -->
+    <div class="page" id="page-announcements">
+      <div class="topbar">
+        <div><div class="page-title">Announcements</div><div class="page-sub">Show popup messages to all users on app open</div></div>
+        <button class="btn btn-secondary" onclick="loadAnnouncements()">↻ Refresh</button>
+      </div>
+      <div class="notif-form" style="margin-bottom:20px;">
+        <div class="notif-form-title">📢 New Announcement</div>
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input class="form-input" id="ann-title" placeholder="e.g. New Feature Alert!" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-input" id="ann-message" rows="3" placeholder="Write your announcement message here..." style="resize:vertical;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="ann-status">
+            <option value="true">Active — show to users</option>
+            <option value="false">Inactive — hidden</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="addAnnouncement()" style="margin-top:8px;">📢 Publish Announcement</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Current Announcements</span>
+          <span id="ann-count" style="color:var(--orange);font-size:12px;font-weight:700;"></span>
+        </div>
+        <div id="announcements-list"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- BADGES -->
+    <div class="page" id="page-badges">
+      <div class="topbar">
+        <div><div class="page-title">Badges</div><div class="page-sub">Manage badge definitions & award badges manually</div></div>
+        <button class="btn btn-secondary" onclick="loadBadgeDefs()">↻ Refresh</button>
+      </div>
+
+      <!-- Award badge manually -->
+      <div class="notif-form" style="margin-bottom:20px;">
+        <div class="notif-form-title">🏅 Award Badge to User</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">User ID</label>
+            <input class="form-input" id="award-user-id" placeholder="Paste user UUID here" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Badge</label>
+            <select class="form-select" id="award-badge-id">
+              <option value="">Loading badges...</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="awardBadgeManually()" style="margin-top:8px;">🎖 Award Badge</button>
+      </div>
+
+      <!-- Create custom badge -->
+      <div class="notif-form" style="margin-bottom:20px;">
+        <div class="notif-form-title">✨ Create / Edit Badge</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Badge ID (unique)</label>
+            <input class="form-input" id="badge-id" placeholder="e.g. marathon_runner" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Label</label>
+            <input class="form-input" id="badge-label" placeholder="e.g. Marathon Runner" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input class="form-input" id="badge-desc" placeholder="e.g. Complete a 42km run" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Icon (Ionicons name)</label>
+            <input class="form-input" id="badge-icon" placeholder="e.g. trophy, flame, run" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Color</label>
+            <input class="form-input" type="color" id="badge-color" value="#FF6B35" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Condition Type</label>
+            <select class="form-select" id="badge-condition-type">
+              <option value="activities">Activities count</option>
+              <option value="distance">Total distance (km)</option>
+              <option value="streak">Day streak</option>
+              <option value="pace">Pace (min/km)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Condition Value</label>
+            <input class="form-input" type="number" id="badge-condition-value" placeholder="e.g. 42" />
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveBadgeDef()" style="margin-top:8px;">💾 Save Badge</button>
+      </div>
+
+      <!-- Badge list -->
+      <div class="section-card">
+        <div class="section-card-title">All Badges</div>
+        <div id="badge-defs-list"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- FEATURE FLAGS -->
+    <div class="page" id="page-features">
+      <div class="topbar">
+        <div><div class="page-title">Feature Flags</div><div class="page-sub">Enable or disable app features instantly</div></div>
+        <button class="btn btn-secondary" onclick="loadFeatureFlags()">↻ Refresh</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-title">App Features</div>
+        <div id="features-list"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
     <!-- BANNERS -->
     <div class="page" id="page-banners">
       <div class="topbar">
@@ -615,7 +750,7 @@ function showPage(name, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   if (el) el.classList.add('active');
-  const loaders = { dashboard: loadDashboard, analytics: loadAnalytics, history: loadHistory, users: loadUsers, activities: loadActivities, leaderboard: () => loadLeaderboard('Running'), premium: loadPremium, aichats: loadAIChats, schedule: loadScheduled };
+  const loaders = { dashboard: loadDashboard, analytics: loadAnalytics, history: loadHistory, users: loadUsers, activities: loadActivities, leaderboard: () => loadLeaderboard('Running'), premium: loadPremium, aichats: loadAIChats, schedule: loadScheduled, banners: loadBanners, announcements: loadAnnouncements, badges: loadBadgeDefs, features: loadFeatureFlags };
   if (loaders[name]) loaders[name]();
 }
 
@@ -1254,6 +1389,190 @@ async function deleteBanner(id) {
   });
   toast('Banner deleted', 'success');
   loadBanners();
+}
+
+// === ANNOUNCEMENTS ===
+async function loadAnnouncements() {
+  const list = document.getElementById('announcements-list');
+  const count = document.getElementById('ann-count');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  const data = await sf('announcements?select=*&order=created_at.desc');
+  if (!data || data.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📢</div>No announcements yet.</div>';
+    count.textContent = '';
+    return;
+  }
+  count.textContent = `${data.length} total`;
+  list.innerHTML = data.map(a => `
+    <div style="background:var(--card2);border-radius:var(--radius-sm);padding:16px;margin-bottom:10px;border:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-weight:700;font-size:14px;">${a.title}</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="tag ${a.is_active ? 'tag-run' : ''}" style="${!a.is_active ? 'background:rgba(85,85,85,0.2);color:#555;' : ''}">${a.is_active ? '● ACTIVE' : '● INACTIVE'}</span>
+          <span style="color:var(--text3);font-size:11px;">${new Date(a.created_at).toLocaleDateString()}</span>
+        </div>
+      </div>
+      <div style="color:var(--text2);font-size:13px;margin-bottom:12px;">${a.message}</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary" style="padding:6px 14px;font-size:12px;" onclick="toggleAnnouncement('${a.id}',${a.is_active})">${a.is_active ? '⏸ Deactivate' : '▶ Activate'}</button>
+        <button class="btn" style="padding:6px 14px;font-size:12px;background:var(--red-dim);color:var(--red);border:1px solid rgba(244,67,54,0.3);" onclick="deleteAnnouncement('${a.id}')">🗑 Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function addAnnouncement() {
+  const title = document.getElementById('ann-title').value.trim();
+  const message = document.getElementById('ann-message').value.trim();
+  const is_active = document.getElementById('ann-status').value === 'true';
+  if (!title || !message) { toast('Title and message are required', 'error'); return; }
+  const res = await sf('announcements', { method: 'POST', body: JSON.stringify({ title, message, is_active }) });
+  if (res && !res.error) {
+    toast('Announcement published!', 'success');
+    document.getElementById('ann-title').value = '';
+    document.getElementById('ann-message').value = '';
+    loadAnnouncements();
+  } else { toast('Error: ' + (res?.message || 'Unknown'), 'error'); }
+}
+
+async function toggleAnnouncement(id, current) {
+  await sf(`announcements?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ is_active: !current }) });
+  toast(`Announcement ${!current ? 'activated' : 'deactivated'}`, 'success');
+  loadAnnouncements();
+}
+
+async function deleteAnnouncement(id) {
+  if (!confirm('Delete this announcement?')) return;
+  await sf(`announcements?id=eq.${id}`, { method: 'DELETE' });
+  toast('Deleted', 'success');
+  loadAnnouncements();
+}
+
+// === FEATURE FLAGS ===
+async function loadFeatureFlags() {
+  const list = document.getElementById('features-list');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  const data = await sf('feature_flags?select=*&order=key.asc');
+  if (!data || data.length === 0) {
+    list.innerHTML = '<div class="empty">No feature flags found.</div>';
+    return;
+  }
+  list.innerHTML = data.map(f => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--border);gap:12px;">
+      <div>
+        <div style="font-weight:700;font-size:14px;">${f.label || f.key}</div>
+        <div style="color:var(--text3);font-size:11px;margin-top:2px;">${f.key}</div>
+      </div>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+        <span style="color:${f.enabled ? 'var(--green)' : 'var(--text3)'};font-size:12px;font-weight:600;">${f.enabled ? 'ENABLED' : 'DISABLED'}</span>
+        <div onclick="toggleFeature('${f.id}',${f.enabled})" style="width:44px;height:24px;border-radius:12px;background:${f.enabled ? 'var(--green)' : 'var(--border2)'};position:relative;cursor:pointer;transition:background .2s;">
+          <div style="position:absolute;top:3px;left:${f.enabled ? '23px' : '3px'};width:18px;height:18px;border-radius:9px;background:#fff;transition:left .2s;"></div>
+        </div>
+      </label>
+    </div>
+  `).join('');
+}
+
+async function toggleFeature(id, current) {
+  await sf(`feature_flags?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ enabled: !current, updated_at: new Date().toISOString() }) });
+  toast(`Feature ${!current ? 'enabled' : 'disabled'}`, 'success');
+  loadFeatureFlags();
+}
+
+// === BADGES ===
+let allBadgeDefs = [];
+
+async function loadBadgeDefs() {
+  const list = document.getElementById('badge-defs-list');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  const data = await sf('badge_definitions?select=*&order=created_at.asc');
+  allBadgeDefs = data || [];
+
+  // Populate award dropdown
+  const select = document.getElementById('award-badge-id');
+  select.innerHTML = allBadgeDefs.map(b => `<option value="${b.id}">${b.label}</option>`).join('');
+
+  if (!data || data.length === 0) {
+    list.innerHTML = '<div class="empty">No badges found.</div>';
+    return;
+  }
+
+  list.innerHTML = `<table><thead><tr><th>ID</th><th>Label</th><th>Icon</th><th>Color</th><th>Condition</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+    ${data.map(b => `
+      <tr>
+        <td><code style="color:var(--text3);font-size:11px;">${b.id}</code></td>
+        <td style="font-weight:600;">${b.label}</td>
+        <td><span style="color:var(--text2);">${b.icon}</span></td>
+        <td><span style="background:${b.color};color:#fff;padding:2px 8px;border-radius:6px;font-size:11px;">${b.color}</span></td>
+        <td style="font-size:12px;color:var(--text2);">${b.condition_type} ≥ ${b.condition_value}</td>
+        <td><span class="tag ${b.is_active ? 'tag-run' : ''}" style="${!b.is_active ? 'background:rgba(85,85,85,0.2);color:#555;' : ''}">${b.is_active ? 'Active' : 'Inactive'}</span></td>
+        <td>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;" onclick="editBadge('${b.id}')">Edit</button>
+            <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;" onclick="toggleBadgeDef('${b.id}',${b.is_active})">${b.is_active ? 'Disable' : 'Enable'}</button>
+          </div>
+        </td>
+      </tr>
+    `).join('')}
+  </tbody></table>`;
+}
+
+function editBadge(id) {
+  const b = allBadgeDefs.find(x => x.id === id);
+  if (!b) return;
+  document.getElementById('badge-id').value = b.id;
+  document.getElementById('badge-label').value = b.label;
+  document.getElementById('badge-desc').value = b.description;
+  document.getElementById('badge-icon').value = b.icon;
+  document.getElementById('badge-color').value = b.color;
+  document.getElementById('badge-condition-type').value = b.condition_type;
+  document.getElementById('badge-condition-value').value = b.condition_value;
+  document.querySelector('.notif-form:nth-of-type(2) .notif-form-title').textContent = `✏️ Editing: ${b.label}`;
+}
+
+async function saveBadgeDef() {
+  const id = document.getElementById('badge-id').value.trim();
+  const label = document.getElementById('badge-label').value.trim();
+  const description = document.getElementById('badge-desc').value.trim();
+  const icon = document.getElementById('badge-icon').value.trim();
+  const color = document.getElementById('badge-color').value;
+  const condition_type = document.getElementById('badge-condition-type').value;
+  const condition_value = parseFloat(document.getElementById('badge-condition-value').value) || 0;
+  if (!id || !label || !description || !icon) { toast('All fields required', 'error'); return; }
+  const payload = { id, label, description, icon, color, condition_type, condition_value, is_active: true };
+  const existing = allBadgeDefs.find(b => b.id === id);
+  if (existing) {
+    await sf(`badge_definitions?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ label, description, icon, color, condition_type, condition_value }) });
+    toast('Badge updated!', 'success');
+  } else {
+    await sf('badge_definitions', { method: 'POST', body: JSON.stringify(payload) });
+    toast('Badge created!', 'success');
+  }
+  loadBadgeDefs();
+}
+
+async function toggleBadgeDef(id, current) {
+  await sf(`badge_definitions?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ is_active: !current }) });
+  toast(`Badge ${!current ? 'enabled' : 'disabled'}`, 'success');
+  loadBadgeDefs();
+}
+
+async function awardBadgeManually() {
+  const user_id = document.getElementById('award-user-id').value.trim();
+  const badge_id = document.getElementById('award-badge-id').value;
+  if (!user_id || !badge_id) { toast('User ID and badge required', 'error'); return; }
+  const res = await sf('badges', { method: 'POST', body: JSON.stringify({ user_id, badge_id, earned_at: new Date().toISOString() }) });
+  if (res && !res.error) { toast('Badge awarded!', 'success'); }
+  else { toast('Error: ' + (res?.message || 'User may already have this badge'), 'error'); }
+}
+
+// === USER STATS (enhance existing users) ===
+async function loadUserStats(userId) {
+  const acts = await sf(`activities?select=distance,type&user_id=eq.${userId}`);
+  if (!acts) return { total: 0, distance: '0.00' };
+  const total = acts.length;
+  const distance = acts.reduce((s, a) => s + parseFloat(a.distance || 0), 0).toFixed(2);
+  return { total, distance };
 }
 
 // === INIT ===
