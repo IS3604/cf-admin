@@ -206,6 +206,12 @@ textarea.form-input{resize:vertical;min-height:80px;}
 /* Revenue card */
 .revenue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
 
+/* Badge designer */
+.icon-chip { background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--text2);cursor:pointer;transition:all .15s; }
+.icon-chip:hover { border-color:var(--orange);color:var(--orange); }
+.color-chip { border:2px solid transparent;transition:transform .15s; }
+.color-chip:hover { transform:scale(1.2); }
+
 /* Feature flags toggle */
 .feature-toggle-row { display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--border); }
 .feature-toggle-row:last-child { border-bottom:none; }
@@ -532,77 +538,144 @@ textarea.form-input{resize:vertical;min-height:80px;}
     <!-- BADGES -->
     <div class="page" id="page-badges">
       <div class="topbar">
-        <div><div class="page-title">Badges</div><div class="page-sub">Manage badge definitions & award badges manually</div></div>
+        <div><div class="page-title">Badges</div><div class="page-sub">Design, manage & award badges</div></div>
         <button class="btn btn-secondary" onclick="loadBadgeDefs()">↻ Refresh</button>
       </div>
 
-      <!-- Award badge manually -->
-      <div class="notif-form" style="margin-bottom:20px;">
-        <div class="notif-form-title">🏅 Award Badge to User</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">User ID</label>
-            <input class="form-input" id="award-user-id" placeholder="Paste user UUID here" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Badge</label>
-            <select class="form-select" id="award-badge-id">
-              <option value="">Loading badges...</option>
-            </select>
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="awardBadgeManually()" style="margin-top:8px;">🎖 Award Badge</button>
-      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
 
-      <!-- Create custom badge -->
-      <div class="notif-form" style="margin-bottom:20px;">
-        <div class="notif-form-title">✨ Create / Edit Badge</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Badge ID (unique)</label>
-            <input class="form-input" id="badge-id" placeholder="e.g. marathon_runner" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Label</label>
-            <input class="form-input" id="badge-label" placeholder="e.g. Marathon Runner" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Description</label>
-          <input class="form-input" id="badge-desc" placeholder="e.g. Complete a 42km run" />
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Icon (Ionicons name)</label>
-            <input class="form-input" id="badge-icon" placeholder="e.g. trophy, flame, run" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Color</label>
-            <input class="form-input" type="color" id="badge-color" value="#FF6B35" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Condition Type</label>
-            <select class="form-select" id="badge-condition-type">
-              <option value="activities">Activities count</option>
-              <option value="distance">Total distance (km)</option>
-              <option value="streak">Day streak</option>
-              <option value="pace">Pace (min/km)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Condition Value</label>
-            <input class="form-input" type="number" id="badge-condition-value" placeholder="e.g. 42" />
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="saveBadgeDef()" style="margin-top:8px;">💾 Save Badge</button>
-      </div>
+        <!-- Badge Designer -->
+        <div class="notif-form" style="margin-bottom:0;">
+          <div class="notif-form-title">✨ Badge Designer</div>
 
-      <!-- Badge list -->
-      <div class="section-card">
-        <div class="section-card-title">All Badges</div>
-        <div id="badge-defs-list"><div class="loading"><div class="spinner"></div></div></div>
+          <!-- Live Preview -->
+          <div style="display:flex;justify-content:center;margin-bottom:20px;">
+            <div id="badge-preview-card" style="background:#111;border-radius:16px;padding:16px 12px;border:2px solid #FF6B35;display:flex;flex-direction:column;align-items:center;gap:8px;width:110px;">
+              <div id="badge-preview-circle" style="width:52px;height:52px;border-radius:26px;background:rgba(255,107,53,0.2);display:flex;align-items:center;justify-content:center;font-size:26px;">🏆</div>
+              <div id="badge-preview-label" style="color:#fff;font-size:11px;font-weight:700;text-align:center;">Badge Name</div>
+              <div style="background:rgba(255,107,53,0.15);border-radius:6px;padding:2px 8px;"><span id="badge-preview-status" style="color:#FF6B35;font-size:9px;font-weight:800;">EARNED</span></div>
+            </div>
+          </div>
+
+          <!-- Icon picker -->
+          <div class="form-group">
+            <label class="form-label">ICON EMOJI (drag & drop or pick)</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('🏆')" title="Trophy">🏆</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('🔥')" title="Flame">🔥</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('⚡')" title="Bolt">⚡</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('🏅')" title="Medal">🏅</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('💪')" title="Strong">💪</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('🚀')" title="Rocket">🚀</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('⭐')" title="Star">⭐</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('👑')" title="Crown">👑</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('🎯')" title="Target">🎯</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('🌟')" title="Glowing Star">🌟</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('💎')" title="Diamond">💎</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('🏃')" title="Running">🏃</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('🚴')" title="Cycling">🚴</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('🥇')" title="Gold">🥇</span>
+              <span style="cursor:pointer;font-size:22px;" onclick="setBadgeEmoji('🎖')" title="Badge">🎖</span>
+            </div>
+            <input class="form-input" id="badge-emoji" placeholder="Or type emoji directly e.g. 🏆" oninput="updateBadgePreview()" style="font-size:20px;" />
+          </div>
+
+          <!-- Ionicon name for app -->
+          <div class="form-group">
+            <label class="form-label">IONICONS NAME (used in app)</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+              <span onclick="setBadgeIcon('trophy')" class="icon-chip">trophy</span>
+              <span onclick="setBadgeIcon('flame')" class="icon-chip">flame</span>
+              <span onclick="setBadgeIcon('flash')" class="icon-chip">flash</span>
+              <span onclick="setBadgeIcon('location')" class="icon-chip">location</span>
+              <span onclick="setBadgeIcon('rocket')" class="icon-chip">rocket</span>
+              <span onclick="setBadgeIcon('barbell')" class="icon-chip">barbell</span>
+              <span onclick="setBadgeIcon('crown')" class="icon-chip">crown</span>
+              <span onclick="setBadgeIcon('speedometer')" class="icon-chip">speedometer</span>
+              <span onclick="setBadgeIcon('walk')" class="icon-chip">walk</span>
+              <span onclick="setBadgeIcon('star')" class="icon-chip">star</span>
+              <span onclick="setBadgeIcon('diamond')" class="icon-chip">diamond</span>
+              <span onclick="setBadgeIcon('medal')" class="icon-chip">medal</span>
+            </div>
+            <input class="form-input" id="badge-icon" placeholder="e.g. trophy" oninput="updateBadgePreview()" />
+          </div>
+
+          <!-- Color -->
+          <div class="form-group">
+            <label class="form-label">BADGE COLOR</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+              <div onclick="setBadgeColor('#FF6B35')" style="width:28px;height:28px;border-radius:50%;background:#FF6B35;cursor:pointer;border:2px solid transparent;" class="color-chip"></div>
+              <div onclick="setBadgeColor('#F44336')" style="width:28px;height:28px;border-radius:50%;background:#F44336;cursor:pointer;" class="color-chip"></div>
+              <div onclick="setBadgeColor('#FF9800')" style="width:28px;height:28px;border-radius:50%;background:#FF9800;cursor:pointer;" class="color-chip"></div>
+              <div onclick="setBadgeColor('#FFD700')" style="width:28px;height:28px;border-radius:50%;background:#FFD700;cursor:pointer;" class="color-chip"></div>
+              <div onclick="setBadgeColor('#4CAF50')" style="width:28px;height:28px;border-radius:50%;background:#4CAF50;cursor:pointer;" class="color-chip"></div>
+              <div onclick="setBadgeColor('#2196F3')" style="width:28px;height:28px;border-radius:50%;background:#2196F3;cursor:pointer;" class="color-chip"></div>
+              <div onclick="setBadgeColor('#9C27B0')" style="width:28px;height:28px;border-radius:50%;background:#9C27B0;cursor:pointer;" class="color-chip"></div>
+              <div onclick="setBadgeColor('#E91E63')" style="width:28px;height:28px;border-radius:50%;background:#E91E63;cursor:pointer;" class="color-chip"></div>
+            </div>
+            <input class="form-input" type="color" id="badge-color" value="#FF6B35" oninput="updateBadgePreview()" />
+          </div>
+
+          <!-- Details -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">BADGE ID (unique)</label>
+              <input class="form-input" id="badge-id" placeholder="e.g. marathon_runner" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">LABEL</label>
+              <input class="form-input" id="badge-label" placeholder="e.g. Marathon Runner" oninput="updateBadgePreview()" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">DESCRIPTION</label>
+            <input class="form-input" id="badge-desc" placeholder="e.g. Complete a 42km run" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">CONDITION TYPE</label>
+              <select class="form-select" id="badge-condition-type">
+                <option value="activities">Activities count</option>
+                <option value="distance">Total distance (km)</option>
+                <option value="streak">Day streak</option>
+                <option value="pace">Pace (min/km)</option>
+                <option value="manual">Manual only</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">CONDITION VALUE</label>
+              <input class="form-input" type="number" id="badge-condition-value" placeholder="e.g. 42" />
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="saveBadgeDef()" style="margin-top:8px;width:100%;">💾 Save Badge</button>
+          <button class="btn btn-secondary" onclick="clearBadgeForm()" style="margin-top:8px;width:100%;">✕ Clear Form</button>
+        </div>
+
+        <!-- Award Badge -->
+        <div>
+          <div class="notif-form" style="margin-bottom:20px;">
+            <div class="notif-form-title">🏅 Award Badge to User</div>
+            <div class="form-group">
+              <label class="form-label">USER</label>
+              <select class="form-select" id="award-user-id-select">
+                <option value="">Loading users...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">BADGE</label>
+              <select class="form-select" id="award-badge-id">
+                <option value="">Loading badges...</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="awardBadgeManually()" style="margin-top:8px;width:100%;">🎖 Award Badge</button>
+          </div>
+
+          <!-- Badge list -->
+          <div class="section-card">
+            <div class="section-card-title">All Badges</div>
+            <div id="badge-defs-list"><div class="loading"><div class="spinner"></div></div></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1482,6 +1555,47 @@ async function toggleFeature(id, current) {
 // === BADGES ===
 let allBadgeDefs = [];
 
+function setBadgeEmoji(e) {
+  document.getElementById('badge-emoji').value = e;
+  updateBadgePreview();
+}
+
+function setBadgeIcon(icon) {
+  document.getElementById('badge-icon').value = icon;
+  updateBadgePreview();
+}
+
+function setBadgeColor(color) {
+  document.getElementById('badge-color').value = color;
+  updateBadgePreview();
+}
+
+function updateBadgePreview() {
+  const emoji = document.getElementById('badge-emoji')?.value || '🏆';
+  const label = document.getElementById('badge-label')?.value || 'Badge Name';
+  const color = document.getElementById('badge-color')?.value || '#FF6B35';
+  const circle = document.getElementById('badge-preview-circle');
+  const labelEl = document.getElementById('badge-preview-label');
+  const statusEl = document.getElementById('badge-preview-status');
+  const card = document.getElementById('badge-preview-card');
+  if (circle) circle.style.background = color + '33';
+  if (circle) circle.textContent = emoji;
+  if (labelEl) labelEl.textContent = label;
+  if (statusEl) { statusEl.style.color = color; statusEl.parentElement.style.background = color + '22'; }
+  if (card) card.style.borderColor = color;
+}
+
+function clearBadgeForm() {
+  ['badge-id','badge-label','badge-desc','badge-icon','badge-emoji','badge-condition-value'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('badge-color').value = '#FF6B35';
+  document.getElementById('badge-condition-type').value = 'activities';
+  updateBadgePreview();
+  document.querySelector('#page-badges .notif-form .notif-form-title').textContent = '✨ Badge Designer';
+}
+
 async function loadBadgeDefs() {
   const list = document.getElementById('badge-defs-list');
   list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
@@ -1490,31 +1604,35 @@ async function loadBadgeDefs() {
 
   // Populate award dropdown
   const select = document.getElementById('award-badge-id');
-  select.innerHTML = allBadgeDefs.map(b => `<option value="${b.id}">${b.label}</option>`).join('');
+  if (select) select.innerHTML = allBadgeDefs.map(b => `<option value="${b.id}">${b.label}</option>`).join('');
+
+  // Load users for award dropdown
+  const userSelect = document.getElementById('award-user-id-select');
+  if (userSelect) {
+    const users = await sf('profiles?select=id,name&order=name.asc');
+    if (users) userSelect.innerHTML = users.map(u => `<option value="${u.id}">${u.name || 'Unknown'} — ${u.id.substring(0,8)}...</option>`).join('');
+  }
 
   if (!data || data.length === 0) {
-    list.innerHTML = '<div class="empty">No badges found.</div>';
+    list.innerHTML = '<div class="empty"><div class="empty-icon">🎖</div>No badges yet. Create one!</div>';
     return;
   }
 
-  list.innerHTML = `<table><thead><tr><th>ID</th><th>Label</th><th>Icon</th><th>Color</th><th>Condition</th><th>Status</th><th>Actions</th></tr></thead><tbody>
-    ${data.map(b => `
-      <tr>
-        <td><code style="color:var(--text3);font-size:11px;">${b.id}</code></td>
-        <td style="font-weight:600;">${b.label}</td>
-        <td><span style="color:var(--text2);">${b.icon}</span></td>
-        <td><span style="background:${b.color};color:#fff;padding:2px 8px;border-radius:6px;font-size:11px;">${b.color}</span></td>
-        <td style="font-size:12px;color:var(--text2);">${b.condition_type} ≥ ${b.condition_value}</td>
-        <td><span class="tag ${b.is_active ? 'tag-run' : ''}" style="${!b.is_active ? 'background:rgba(85,85,85,0.2);color:#555;' : ''}">${b.is_active ? 'Active' : 'Inactive'}</span></td>
-        <td>
-          <div style="display:flex;gap:6px;">
-            <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;" onclick="editBadge('${b.id}')">Edit</button>
-            <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;" onclick="toggleBadgeDef('${b.id}',${b.is_active})">${b.is_active ? 'Disable' : 'Enable'}</button>
-          </div>
-        </td>
-      </tr>
-    `).join('')}
-  </tbody></table>`;
+  list.innerHTML = data.map(b => `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);">
+      <div style="width:44px;height:44px;border-radius:12px;background:${b.color}22;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">${b.emoji || '🏆'}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:13px;">${b.label}</div>
+        <div style="color:var(--text3);font-size:11px;margin-top:2px;">${b.description}</div>
+        <div style="color:var(--text3);font-size:10px;margin-top:2px;">${b.condition_type} ≥ ${b.condition_value} · icon: ${b.icon}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
+        <span class="tag ${b.is_active ? 'tag-run' : ''}" style="${!b.is_active ? 'background:rgba(85,85,85,0.2);color:#555;' : 'font-size:10px;'}">${b.is_active ? 'Active' : 'Off'}</span>
+        <button class="btn btn-secondary" style="padding:3px 8px;font-size:10px;" onclick="editBadge('${b.id}')">Edit</button>
+        <button class="btn btn-secondary" style="padding:3px 8px;font-size:10px;" onclick="toggleBadgeDef('${b.id}',${b.is_active})">${b.is_active ? 'Disable' : 'Enable'}</button>
+      </div>
+    </div>
+  `).join('');
 }
 
 function editBadge(id) {
@@ -1524,31 +1642,47 @@ function editBadge(id) {
   document.getElementById('badge-label').value = b.label;
   document.getElementById('badge-desc').value = b.description;
   document.getElementById('badge-icon').value = b.icon;
+  document.getElementById('badge-emoji').value = b.emoji || '';
   document.getElementById('badge-color').value = b.color;
   document.getElementById('badge-condition-type').value = b.condition_type;
   document.getElementById('badge-condition-value').value = b.condition_value;
-  document.querySelector('.notif-form:nth-of-type(2) .notif-form-title').textContent = `✏️ Editing: ${b.label}`;
+  updateBadgePreview();
+  document.querySelector('#page-badges .notif-form .notif-form-title').textContent = `✏️ Editing: ${b.label}`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function saveBadgeDef() {
-  const id = document.getElementById('badge-id').value.trim();
+  const id = document.getElementById('badge-id').value.trim().replace(/\s+/g, '_').toLowerCase();
   const label = document.getElementById('badge-label').value.trim();
   const description = document.getElementById('badge-desc').value.trim();
   const icon = document.getElementById('badge-icon').value.trim();
+  const emoji = document.getElementById('badge-emoji').value.trim();
   const color = document.getElementById('badge-color').value;
   const condition_type = document.getElementById('badge-condition-type').value;
   const condition_value = parseFloat(document.getElementById('badge-condition-value').value) || 0;
-  if (!id || !label || !description || !icon) { toast('All fields required', 'error'); return; }
-  const payload = { id, label, description, icon, color, condition_type, condition_value, is_active: true };
-  const existing = allBadgeDefs.find(b => b.id === id);
-  if (existing) {
-    await sf(`badge_definitions?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ label, description, icon, color, condition_type, condition_value }) });
-    toast('Badge updated!', 'success');
-  } else {
-    await sf('badge_definitions', { method: 'POST', body: JSON.stringify(payload) });
-    toast('Badge created!', 'success');
-  }
-  loadBadgeDefs();
+  if (!id || !label || !description) { toast('ID, label and description are required', 'error'); return; }
+  const payload = { id, label, description, icon: icon || 'trophy', emoji: emoji || '🏆', color, condition_type, condition_value, is_active: true };
+  try {
+    const existing = allBadgeDefs.find(b => b.id === id);
+    if (existing) {
+      await fetch(`${SUPABASE_URL}/rest/v1/badge_definitions?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
+        body: JSON.stringify({ label, description, icon: icon || 'trophy', emoji: emoji || '🏆', color, condition_type, condition_value }),
+      });
+      toast('Badge updated!', 'success');
+    } else {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/badge_definitions`, {
+        method: 'POST',
+        headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) { const err = await res.text(); toast('Error: ' + err, 'error'); return; }
+      toast('Badge created!', 'success');
+    }
+    clearBadgeForm();
+    loadBadgeDefs();
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
 }
 
 async function toggleBadgeDef(id, current) {
@@ -1558,12 +1692,12 @@ async function toggleBadgeDef(id, current) {
 }
 
 async function awardBadgeManually() {
-  const user_id = document.getElementById('award-user-id').value.trim();
+  const user_id = document.getElementById('award-user-id-select')?.value || document.getElementById('award-user-id')?.value;
   const badge_id = document.getElementById('award-badge-id').value;
-  if (!user_id || !badge_id) { toast('User ID and badge required', 'error'); return; }
+  if (!user_id || !badge_id) { toast('User and badge required', 'error'); return; }
   const res = await sf('badges', { method: 'POST', body: JSON.stringify({ user_id, badge_id, earned_at: new Date().toISOString() }) });
-  if (res && !res.error) { toast('Badge awarded!', 'success'); }
-  else { toast('Error: ' + (res?.message || 'User may already have this badge'), 'error'); }
+  if (res && !res.error) { toast('🎖 Badge awarded! User will see popup instantly if app is open.', 'success'); }
+  else { toast('Error: User may already have this badge', 'error'); }
 }
 
 // === USER STATS (enhance existing users) ===
