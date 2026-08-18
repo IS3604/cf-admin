@@ -1630,6 +1630,7 @@ async function loadBadgeDefs() {
         <span class="tag ${b.is_active ? 'tag-run' : ''}" style="${!b.is_active ? 'background:rgba(85,85,85,0.2);color:#555;' : 'font-size:10px;'}">${b.is_active ? 'Active' : 'Off'}</span>
         <button class="btn btn-secondary" style="padding:3px 8px;font-size:10px;" onclick="editBadge('${b.id}')">Edit</button>
         <button class="btn btn-secondary" style="padding:3px 8px;font-size:10px;" onclick="toggleBadgeDef('${b.id}',${b.is_active})">${b.is_active ? 'Disable' : 'Enable'}</button>
+        <button class="btn" style="padding:3px 8px;font-size:10px;background:var(--red-dim);color:var(--red);border:1px solid rgba(244,67,54,0.3);" onclick="deleteBadgeDef('${b.id}')">🗑</button>
       </div>
     </div>
   `).join('');
@@ -1688,6 +1689,16 @@ async function saveBadgeDef() {
 async function toggleBadgeDef(id, current) {
   await sf(`badge_definitions?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ is_active: !current }) });
   toast(`Badge ${!current ? 'enabled' : 'disabled'}`, 'success');
+  loadBadgeDefs();
+}
+
+async function deleteBadgeDef(id) {
+  if (!confirm(`Delete badge "${id}"? This cannot be undone.`)) return;
+  await fetch(`${SUPABASE_URL}/rest/v1/badge_definitions?id=eq.${id}`, {
+    method: 'DELETE',
+    headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` },
+  });
+  toast('Badge deleted', 'success');
   loadBadgeDefs();
 }
 
